@@ -1,47 +1,58 @@
-import { Directive, HostListener, Inject, Input, OnInit, Optional } from '@angular/core';
-import { ActionsSubject } from '@ngrx/store';
+import {
+  Directive,
+  HostListener,
+  Inject,
+  Input,
+  OnInit,
+  Optional,
+} from "@angular/core";
+import { ActionType, ActionsSubject } from "@ngrx/store";
 
-import { Actions, MarkAsSubmittedAction } from '../actions';
-import { FormGroupState, KeyValue } from '../state';
+import { Actions, markAsSubmittedAction } from "../actions";
+import { FormGroupState, KeyValue } from "../state";
 
 // this interface just exists to prevent a direct reference to
 // `Event` in our code, which otherwise causes issues in NativeScript
 // applications
-interface CustomEvent extends Event { }
+interface CustomEvent extends Event {}
 
 @Directive({
   // tslint:disable-next-line:directive-selector
-  selector: 'form:not([ngrxFormsAction])[ngrxFormState]',
+  selector: "form:not([ngrxFormsAction])[ngrxFormState]",
 })
 export class NgrxFormDirective<TStateValue extends KeyValue> implements OnInit {
   // tslint:disable-next-line:no-input-rename
-  @Input('ngrxFormState') state: FormGroupState<TStateValue>;
+  @Input("ngrxFormState") state: FormGroupState<TStateValue>;
 
   constructor(
-    @Optional() @Inject(ActionsSubject) private actionsSubject: ActionsSubject | null
+    @Optional()
+    @Inject(ActionsSubject)
+    private actionsSubject: ActionsSubject | null
   ) {
     this.actionsSubject = actionsSubject;
   }
 
-  protected dispatchAction(action: Actions<TStateValue>) {
+  protected dispatchAction(action: ActionType<Actions>) {
     if (this.actionsSubject !== null) {
       this.actionsSubject.next(action);
     } else {
-      throw new Error('ActionsSubject must be present in order to dispatch actions!');
+      throw new Error(
+        "ActionsSubject must be present in order to dispatch actions!"
+      );
     }
   }
 
   ngOnInit() {
     if (!this.state) {
-      throw new Error('The form state must not be undefined!');
+      throw new Error("The form state must not be undefined!");
     }
   }
 
-  @HostListener('submit', ['$event'])
+  @HostListener("submit", ["$event"])
   onSubmit(event: CustomEvent) {
     event.preventDefault();
     if (this.state.isUnsubmitted) {
-      this.dispatchAction(new MarkAsSubmittedAction(this.state.id));
+      this.dispatchAction(markAsSubmittedAction({ controlId: this.state.id }));
     }
   }
 }

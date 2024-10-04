@@ -1,12 +1,13 @@
-import { Actions, EnableAction } from '../../actions';
-import { computeArrayState, FormArrayState } from '../../state';
-import { childReducer, dispatchActionPerChild } from './util';
+import { ActionType } from "@ngrx/store";
+import { Actions, enableAction } from "../../actions";
+import { computeArrayState, FormArrayState } from "../../state";
+import { childReducer, dispatchActionPerChild } from "./util";
 
 export function enableReducer<TValue>(
   state: FormArrayState<TValue>,
-  action: Actions<TValue[]>,
+  action: ActionType<Actions>
 ): FormArrayState<TValue> {
-  if (action.type !== EnableAction.TYPE) {
+  if (action.type !== enableAction.type) {
     return state;
   }
 
@@ -14,7 +15,9 @@ export function enableReducer<TValue>(
     return childReducer(state, action);
   }
 
-  const controls = dispatchActionPerChild(state.controls, controlId => new EnableAction(controlId));
+  const controls = dispatchActionPerChild(state.controls, (controlId) =>
+    enableAction({ controlId })
+  );
 
   if (controls === state.controls && state.isEnabled) {
     return state;
@@ -32,6 +35,6 @@ export function enableReducer<TValue>(
       wasOrShouldBeEnabled: true,
       wasOrShouldBeTouched: state.isTouched,
       wasOrShouldBeSubmitted: state.isSubmitted,
-    },
+    }
   );
 }

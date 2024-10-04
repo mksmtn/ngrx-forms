@@ -1,38 +1,41 @@
-import { Action } from '@ngrx/store';
+import { Action, ActionType } from "@ngrx/store";
 
 import {
   Actions,
-  AddArrayControlAction,
-  FocusAction,
+  addArrayControlAction,
+  focusAction,
   isNgrxFormsAction,
-  MoveArrayControlAction,
-  RemoveArrayControlAction,
-  SwapArrayControlAction,
-  UnfocusAction,
-} from '../actions';
-import { FormGroupState, isGroupState, KeyValue } from '../state';
-import { addControlReducer } from './reducer/add-control';
-import { clearAsyncErrorReducer } from './reducer/clear-async-error';
-import { disableReducer } from './reducer/disable';
-import { enableReducer } from './reducer/enable';
-import { markAsDirtyReducer } from './reducer/mark-as-dirty';
-import { markAsPristineReducer } from './reducer/mark-as-pristine';
-import { markAsSubmittedReducer } from './reducer/mark-as-submitted';
-import { markAsTouchedReducer } from './reducer/mark-as-touched';
-import { markAsUnsubmittedReducer } from './reducer/mark-as-unsubmitted';
-import { markAsUntouchedReducer } from './reducer/mark-as-untouched';
-import { removeControlReducer } from './reducer/remove-control';
-import { resetReducer } from './reducer/reset';
-import { setAsyncErrorReducer } from './reducer/set-async-error';
-import { setErrorsReducer } from './reducer/set-errors';
-import { setUserDefinedPropertyReducer } from './reducer/set-user-defined-property';
-import { setValueReducer } from './reducer/set-value';
-import { startAsyncValidationReducer } from './reducer/start-async-validation';
-import { childReducer } from './reducer/util';
+  moveArrayControlAction,
+  removeArrayControlAction,
+  swapArrayControlAction,
+  unfocusAction,
+} from "../actions";
+import { FormGroupState, isGroupState, KeyValue } from "../state";
+import { addControlReducer } from "./reducer/add-control";
+import { clearAsyncErrorReducer } from "./reducer/clear-async-error";
+import { disableReducer } from "./reducer/disable";
+import { enableReducer } from "./reducer/enable";
+import { markAsDirtyReducer } from "./reducer/mark-as-dirty";
+import { markAsPristineReducer } from "./reducer/mark-as-pristine";
+import { markAsSubmittedReducer } from "./reducer/mark-as-submitted";
+import { markAsTouchedReducer } from "./reducer/mark-as-touched";
+import { markAsUnsubmittedReducer } from "./reducer/mark-as-unsubmitted";
+import { markAsUntouchedReducer } from "./reducer/mark-as-untouched";
+import { removeControlReducer } from "./reducer/remove-control";
+import { resetReducer } from "./reducer/reset";
+import { setAsyncErrorReducer } from "./reducer/set-async-error";
+import { setErrorsReducer } from "./reducer/set-errors";
+import { setUserDefinedPropertyReducer } from "./reducer/set-user-defined-property";
+import { setValueReducer } from "./reducer/set-value";
+import { startAsyncValidationReducer } from "./reducer/start-async-validation";
+import { childReducer } from "./reducer/util";
 
-export function formGroupReducerInternal<TValue extends KeyValue>(state: FormGroupState<TValue>, action: Actions<TValue>) {
+export function formGroupReducerInternal<TValue extends KeyValue>(
+  state: FormGroupState<TValue>,
+  action: ActionType<Actions>
+) {
   if (!isGroupState(state)) {
-    throw new Error('The state must be a group state');
+    throw new Error("The state must be a group state");
   }
 
   if (!isNgrxFormsAction(action)) {
@@ -44,12 +47,12 @@ export function formGroupReducerInternal<TValue extends KeyValue>(state: FormGro
   }
 
   switch (action.type) {
-    case FocusAction.TYPE:
-    case UnfocusAction.TYPE:
-    case AddArrayControlAction.TYPE:
-    case RemoveArrayControlAction.TYPE:
-    case MoveArrayControlAction.TYPE:
-    case SwapArrayControlAction.TYPE:
+    case focusAction.type:
+    case unfocusAction.type:
+    case addArrayControlAction.type:
+    case removeArrayControlAction.type:
+    case moveArrayControlAction.type:
+    case swapArrayControlAction.type:
       return childReducer(state, action);
 
     default:
@@ -80,9 +83,12 @@ export function formGroupReducerInternal<TValue extends KeyValue>(state: FormGro
 /**
  * This reducer function updates a form group state with actions.
  */
-export function formGroupReducer<TValue extends KeyValue>(state: FormGroupState<TValue> | undefined, action: Action) {
+export function formGroupReducer<TValue extends KeyValue>(
+  state: FormGroupState<TValue> | undefined,
+  action: Action
+) {
   if (!state) {
-    throw new Error('The group state must be defined!');
+    throw new Error("The group state must be defined!");
   }
 
   return formGroupReducerInternal(state, action as any);

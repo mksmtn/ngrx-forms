@@ -1,13 +1,14 @@
-import { Actions, SetAsyncErrorAction } from '../../actions';
-import { computeGroupState, FormGroupState, KeyValue } from '../../state';
-import { deepEquals } from '../../util';
-import { childReducer } from './util';
+import { ActionType } from "@ngrx/store";
+import { Actions, setAsyncErrorAction } from "../../actions";
+import { computeGroupState, FormGroupState, KeyValue } from "../../state";
+import { deepEquals } from "../../util";
+import { childReducer } from "./util";
 
 export function setAsyncErrorReducer<TValue extends KeyValue>(
   state: FormGroupState<TValue>,
-  action: Actions<TValue>,
+  action: ActionType<Actions>
 ): FormGroupState<TValue> {
-  if (action.type !== SetAsyncErrorAction.TYPE) {
+  if (action.type !== setAsyncErrorAction.type) {
     return state;
   }
 
@@ -27,7 +28,9 @@ export function setAsyncErrorReducer<TValue extends KeyValue>(
   }
 
   const errors = { ...state.errors, [name]: value };
-  const pendingValidations = state.pendingValidations.filter(v => v !== action.name);
+  const pendingValidations = state.pendingValidations.filter(
+    (v) => v !== action.name
+  );
 
   return computeGroupState(
     state.id,
@@ -41,6 +44,6 @@ export function setAsyncErrorReducer<TValue extends KeyValue>(
       wasOrShouldBeEnabled: state.isEnabled,
       wasOrShouldBeTouched: state.isTouched,
       wasOrShouldBeSubmitted: state.isSubmitted,
-    },
+    }
   );
 }

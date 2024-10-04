@@ -1,12 +1,13 @@
-import { Actions, ClearAsyncErrorAction } from '../../actions';
-import { FormControlState, FormControlValueTypes } from '../../state';
-import { isEmpty } from '../../util';
+import { ActionType } from "@ngrx/store";
+import { Actions, clearAsyncErrorAction } from "../../actions";
+import { FormControlState, FormControlValueTypes } from "../../state";
+import { isEmpty } from "../../util";
 
 export function clearAsyncErrorReducer<TValue extends FormControlValueTypes>(
   state: FormControlState<TValue>,
-  action: Actions<TValue>,
+  action: ActionType<Actions>
 ): FormControlState<TValue> {
-  if (action.type !== ClearAsyncErrorAction.TYPE) {
+  if (action.type !== clearAsyncErrorAction.type) {
     return state;
   }
 
@@ -19,10 +20,16 @@ export function clearAsyncErrorReducer<TValue extends FormControlValueTypes>(
     delete (errors as any)[name];
   }
 
-  const pendingValidations = state.pendingValidations.filter(v => v !== action.name);
+  const pendingValidations = state.pendingValidations.filter(
+    (v) => v !== action.name
+  );
   const isValid = isEmpty(errors);
 
-  if (errors === state.errors && isValid === state.isValid && pendingValidations.length === state.pendingValidations.length) {
+  if (
+    errors === state.errors &&
+    isValid === state.isValid &&
+    pendingValidations.length === state.pendingValidations.length
+  ) {
     return state;
   }
 

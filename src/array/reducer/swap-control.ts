@@ -1,6 +1,7 @@
-import { Actions, SwapArrayControlAction } from '../../actions';
-import { computeArrayState, FormArrayState } from '../../state';
-import { childReducer, updateIdRecursive } from './util';
+import { ActionType } from "@ngrx/store";
+import { Actions, swapArrayControlAction } from "../../actions";
+import { computeArrayState, FormArrayState } from "../../state";
+import { childReducer, updateIdRecursive } from "./util";
 
 function swapArrayValues(a: readonly any[], i: number, j: number) {
   const n = [...a];
@@ -10,9 +11,9 @@ function swapArrayValues(a: readonly any[], i: number, j: number) {
 
 export function swapControlReducer<TValue>(
   state: FormArrayState<TValue>,
-  action: Actions<TValue[]>,
+  action: ActionType<Actions>
 ): FormArrayState<TValue> {
-  if (action.type !== SwapArrayControlAction.TYPE) {
+  if (action.type !== swapArrayControlAction.type) {
     return state;
   }
 
@@ -28,15 +29,23 @@ export function swapControlReducer<TValue>(
   }
 
   if (fromIndex < 0 || toIndex < 0) {
-    throw new Error(`fromIndex ${fromIndex} or toIndex ${fromIndex} was negative`);
+    throw new Error(
+      `fromIndex ${fromIndex} or toIndex ${fromIndex} was negative`
+    );
   }
 
   if (fromIndex >= state.controls.length || toIndex >= state.controls.length) {
-    throw new Error(`fromIndex ${fromIndex} or toIndex ${toIndex} is out of bounds with the length of the controls ${state.controls.length}`);
+    throw new Error(
+      `fromIndex ${fromIndex} or toIndex ${toIndex} is out of bounds with the length of the controls ${state.controls.length}`
+    );
   }
 
   let controls = swapArrayValues(state.controls, fromIndex, toIndex);
-  controls = controls.map((c, i) => (i >= fromIndex || i >= toIndex) ? updateIdRecursive<any>(c, `${state.id}.${i}`) : c);
+  controls = controls.map((c, i) =>
+    i >= fromIndex || i >= toIndex
+      ? updateIdRecursive<any>(c, `${state.id}.${i}`)
+      : c
+  );
 
   return computeArrayState(
     state.id,

@@ -1,12 +1,13 @@
-import { Actions, SetUserDefinedPropertyAction } from '../../actions';
-import { FormGroupState, KeyValue } from '../../state';
-import { childReducer } from './util';
+import { ActionType } from "@ngrx/store";
+import { Actions, setUserDefinedPropertyAction } from "../../actions";
+import { FormGroupState, KeyValue } from "../../state";
+import { childReducer } from "./util";
 
 export function setUserDefinedPropertyReducer<TValue extends KeyValue>(
   state: FormGroupState<TValue>,
-  action: Actions<TValue>,
+  action: ActionType<Actions>
 ): FormGroupState<TValue> {
-  if (action.type !== SetUserDefinedPropertyAction.TYPE) {
+  if (action.type !== setUserDefinedPropertyAction.type) {
     return state;
   }
 

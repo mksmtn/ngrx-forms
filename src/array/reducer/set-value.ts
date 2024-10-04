@@ -1,13 +1,18 @@
-import { Actions, SetValueAction } from '../../actions';
-import { formStateReducer } from '../../reducer';
-import { computeArrayState, createChildState, FormArrayState } from '../../state';
-import { childReducer } from './util';
+import { ActionType } from "@ngrx/store";
+import { Actions, setValueAction } from "../../actions";
+import { formStateReducer } from "../../reducer";
+import {
+  computeArrayState,
+  createChildState,
+  FormArrayState,
+} from "../../state";
+import { childReducer } from "./util";
 
 export function setValueReducer<TValue>(
   state: FormArrayState<TValue>,
-  action: Actions<TValue[]>,
+  action: ActionType<Actions>
 ): FormArrayState<TValue> {
-  if (action.type !== SetValueAction.TYPE) {
+  if (action.type !== setValueAction.type) {
     return state;
   }
 
@@ -20,19 +25,24 @@ export function setValueReducer<TValue>(
   }
 
   if (action.value instanceof Date) {
-    throw new Error('Date values are not supported. Please used serialized strings instead.');
+    throw new Error(
+      "Date values are not supported. Please used serialized strings instead."
+    );
   }
 
-  const value = action.value;
+  // todo: better typing?
+  const value = action.value as readonly TValue[];
 
-  const controls = value
-    .map((v, i) => {
-      if (!state.controls[i]) {
-        return createChildState(`${state.id}.${i}`, v);
-      }
+  const controls = value.map((v, i) => {
+    if (!state.controls[i]) {
+      return createChildState(`${state.id}.${i}`, v);
+    }
 
-      return formStateReducer<TValue>(state.controls[i], new SetValueAction(state.controls[i].id, v));
-    });
+    return formStateReducer<TValue>(
+      state.controls[i],
+      setValueAction({ controlId: state.controls[i].id, value: v })
+    );
+  });
 
   return computeArrayState(
     state.id,
@@ -46,6 +56,6 @@ export function setValueReducer<TValue>(
       wasOrShouldBeEnabled: state.isEnabled,
       wasOrShouldBeTouched: state.isTouched,
       wasOrShouldBeSubmitted: state.isSubmitted,
-    },
+    }
   );
 }

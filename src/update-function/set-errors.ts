@@ -1,7 +1,12 @@
-import { SetErrorsAction } from '../actions';
-import { formStateReducer } from '../reducer';
-import { AbstractControlState, FormState, isFormState, ValidationErrors } from '../state';
-import { ensureState } from './util';
+import { setErrorsAction } from "../actions";
+import { formStateReducer } from "../reducer";
+import {
+  AbstractControlState,
+  FormState,
+  isFormState,
+  ValidationErrors,
+} from "../state";
+import { ensureState } from "./util";
 
 /**
  * This update function takes a form state and a number of error objects and sets the
@@ -19,35 +24,56 @@ export function setErrors<TValue>(
  */
 export function setErrors<TValue>(
   state: AbstractControlState<TValue>,
-  errorsArray: ValidationErrors[],
+  errorsArray: ValidationErrors[]
 ): FormState<TValue>;
 
 /**
  * This update function takes a number of error objects and returns a projection
  * function that sets the errors of a form state.
  */
-export function setErrors(errors: ValidationErrors, ...rest: ValidationErrors[]): <TValue>(state: AbstractControlState<TValue>) => FormState<TValue>;
+export function setErrors(
+  errors: ValidationErrors,
+  ...rest: ValidationErrors[]
+): <TValue>(state: AbstractControlState<TValue>) => FormState<TValue>;
 
 /**
  * This update function takes an array of error objects and returns a projection
  * function that sets the errors of a form state.
  */
-export function setErrors(errorsArray: ValidationErrors[]): <TValue>(state: AbstractControlState<TValue>) => FormState<TValue>;
+export function setErrors(
+  errorsArray: ValidationErrors[]
+): <TValue>(state: AbstractControlState<TValue>) => FormState<TValue>;
 
 export function setErrors<TValue>(
-  errorsOrErrorsArrayOrState: ValidationErrors | ValidationErrors[] | FormState<TValue>,
+  errorsOrErrorsArrayOrState:
+    | ValidationErrors
+    | ValidationErrors[]
+    | FormState<TValue>,
   errorsOrErrorsArray?: ValidationErrors | ValidationErrors[],
   ...rest: ValidationErrors[]
 ) {
   if (isFormState<TValue>(errorsOrErrorsArrayOrState)) {
     const state = errorsOrErrorsArrayOrState as AbstractControlState<TValue>;
-    const errorsArray = Array.isArray(errorsOrErrorsArray) ? errorsOrErrorsArray : [errorsOrErrorsArray!];
-    const errors = errorsArray.concat(...rest).reduce((agg, err) => Object.assign(agg, err), {} as ValidationErrors);
+    const errorsArray = Array.isArray(errorsOrErrorsArray)
+      ? errorsOrErrorsArray
+      : [errorsOrErrorsArray!];
+    const errors = errorsArray
+      .concat(...rest)
+      .reduce((agg, err) => Object.assign(agg, err), {} as ValidationErrors);
 
-    return formStateReducer(state, new SetErrorsAction(state.id, errors));
+    return formStateReducer(
+      state,
+      setErrorsAction({ controlId: state.id, errors })
+    );
   }
 
-  let errorsArray = Array.isArray(errorsOrErrorsArrayOrState) ? errorsOrErrorsArrayOrState : [errorsOrErrorsArrayOrState];
-  errorsArray = errorsOrErrorsArray === undefined ? errorsArray : errorsArray.concat(errorsOrErrorsArray);
-  return (s: AbstractControlState<TValue>) => setErrors<TValue>(ensureState(s), errorsArray.concat(rest));
+  let errorsArray = Array.isArray(errorsOrErrorsArrayOrState)
+    ? errorsOrErrorsArrayOrState
+    : [errorsOrErrorsArrayOrState];
+  errorsArray =
+    errorsOrErrorsArray === undefined
+      ? errorsArray
+      : errorsArray.concat(errorsOrErrorsArray);
+  return (s: AbstractControlState<TValue>) =>
+    setErrors<TValue>(ensureState(s), errorsArray.concat(rest));
 }

@@ -1,12 +1,13 @@
-import { Actions, RemoveArrayControlAction } from '../../actions';
-import { computeArrayState, FormArrayState } from '../../state';
-import { childReducer, updateIdRecursive } from './util';
+import { ActionType } from "@ngrx/store";
+import { Actions, removeArrayControlAction } from "../../actions";
+import { computeArrayState, FormArrayState } from "../../state";
+import { childReducer, updateIdRecursive } from "./util";
 
 export function removeControlReducer<TValue>(
   state: FormArrayState<TValue>,
-  action: Actions<TValue[]>,
+  action: ActionType<Actions>
 ): FormArrayState<TValue> {
-  if (action.type !== RemoveArrayControlAction.TYPE) {
+  if (action.type !== removeArrayControlAction.type) {
     return state;
   }
 
@@ -15,11 +16,15 @@ export function removeControlReducer<TValue>(
   }
 
   if (action.index >= state.controls.length || action.index < 0) {
-    throw new Error(`Index ${action.index} is out of bounds for array '${state.id}' with length ${state.controls.length}!`);
+    throw new Error(
+      `Index ${action.index} is out of bounds for array '${state.id}' with length ${state.controls.length}!`
+    );
   }
 
   const index = action.index;
-  const controls = state.controls.filter((_, i) => i !== index).map((c, i) => updateIdRecursive(c, `${state.id}.${i}`));
+  const controls = state.controls
+    .filter((_, i) => i !== index)
+    .map((c, i) => updateIdRecursive(c, `${state.id}.${i}`));
 
   return computeArrayState(
     state.id,
@@ -33,6 +38,6 @@ export function removeControlReducer<TValue>(
       wasOrShouldBeEnabled: state.isEnabled,
       wasOrShouldBeTouched: state.isTouched,
       wasOrShouldBeSubmitted: state.isSubmitted,
-    },
+    }
   );
 }

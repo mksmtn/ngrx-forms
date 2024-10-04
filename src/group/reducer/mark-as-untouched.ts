@@ -1,12 +1,13 @@
-import { Actions, MarkAsUntouchedAction } from '../../actions';
-import { computeGroupState, FormGroupState, KeyValue } from '../../state';
-import { childReducer, dispatchActionPerChild } from './util';
+import { ActionType } from "@ngrx/store";
+import { Actions, markAsUntouchedAction } from "../../actions";
+import { computeGroupState, FormGroupState, KeyValue } from "../../state";
+import { childReducer, dispatchActionPerChild } from "./util";
 
 export function markAsUntouchedReducer<TValue extends KeyValue>(
   state: FormGroupState<TValue>,
-  action: Actions<TValue>,
+  action: ActionType<Actions>
 ): FormGroupState<TValue> {
-  if (action.type !== MarkAsUntouchedAction.TYPE) {
+  if (action.type !== markAsUntouchedAction.type) {
     return state;
   }
 
@@ -20,7 +21,9 @@ export function markAsUntouchedReducer<TValue extends KeyValue>(
 
   return computeGroupState(
     state.id,
-    dispatchActionPerChild(state.controls, controlId => new MarkAsUntouchedAction(controlId)),
+    dispatchActionPerChild(state.controls, (controlId) =>
+      markAsUntouchedAction({ controlId })
+    ),
     state.value,
     state.errors,
     state.pendingValidations,
@@ -30,6 +33,6 @@ export function markAsUntouchedReducer<TValue extends KeyValue>(
       wasOrShouldBeEnabled: state.isEnabled,
       wasOrShouldBeTouched: false,
       wasOrShouldBeSubmitted: state.isSubmitted,
-    },
+    }
   );
 }

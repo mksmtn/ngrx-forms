@@ -1,11 +1,12 @@
-import { Actions, EnableAction } from '../../actions';
-import { FormControlState, FormControlValueTypes } from '../../state';
+import { ActionType } from "@ngrx/store";
+import { Actions, enableAction } from "../../actions";
+import { FormControlState, FormControlValueTypes } from "../../state";
 
 export function enableReducer<TValue extends FormControlValueTypes>(
   state: FormControlState<TValue>,
-  action: Actions<TValue>,
+  action: ActionType<Actions>
 ): FormControlState<TValue> {
-  if (action.type !== EnableAction.TYPE) {
+  if (action.type !== enableAction.type) {
     return state;
   }
 

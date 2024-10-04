@@ -1,38 +1,48 @@
-import { Actions } from '../../actions';
-import { formStateReducer } from '../../reducer';
-import { computeArrayState, FormArrayState, FormGroupControls, FormGroupState, FormState, isArrayState, isGroupState } from '../../state';
+import { ActionType } from "@ngrx/store";
+import { Actions } from "../../actions";
+import { formStateReducer } from "../../reducer";
+import {
+  computeArrayState,
+  FormArrayState,
+  FormGroupControls,
+  FormGroupState,
+  FormState,
+  isArrayState,
+  isGroupState,
+} from "../../state";
 
 export function dispatchActionPerChild<TValue>(
   controls: readonly FormState<TValue>[],
-  actionCreator: (controlId: string) => Actions<TValue>,
+  actionCreator: (controlId: string) => ActionType<Actions>
 ): readonly FormState<TValue>[] {
   let hasChanged = false;
-  const newControls = controls
-    .map(state => {
-      const newState = formStateReducer<TValue>(state, actionCreator(state.id));
-      hasChanged = hasChanged || state !== newState;
-      return newState;
-    });
+  const newControls = controls.map((state) => {
+    const newState = formStateReducer<TValue>(state, actionCreator(state.id));
+    hasChanged = hasChanged || state !== newState;
+    return newState;
+  });
 
   return hasChanged ? newControls : controls;
 }
 
 function callChildReducers<TValue>(
   controls: readonly FormState<TValue>[],
-  action: Actions<TValue[]>,
+  action: ActionType<Actions>
 ): readonly FormState<TValue>[] {
   let hasChanged = false;
-  const newControls = controls
-    .map(state => {
-      const newState = formStateReducer<TValue>(state, action);
-      hasChanged = hasChanged || state !== newState;
-      return newState;
-    });
+  const newControls = controls.map((state) => {
+    const newState = formStateReducer<TValue>(state, action);
+    hasChanged = hasChanged || state !== newState;
+    return newState;
+  });
 
   return hasChanged ? newControls : controls;
 }
 
-export function childReducer<TValue>(state: FormArrayState<TValue>, action: Actions<TValue[]>) {
+export function childReducer<TValue>(
+  state: FormArrayState<TValue>,
+  action: ActionType<Actions>
+) {
   const controls = callChildReducers(state.controls, action);
 
   if (state.controls === controls) {
@@ -51,16 +61,26 @@ export function childReducer<TValue>(state: FormArrayState<TValue>, action: Acti
       wasOrShouldBeEnabled: state.isEnabled,
       wasOrShouldBeTouched: state.isTouched,
       wasOrShouldBeSubmitted: state.isSubmitted,
-    },
+    }
   );
 }
 
-export function updateIdRecursiveForGroup<TValue>(state: FormGroupState<TValue>, newId: string): FormGroupState<TValue> {
-  const controls: FormGroupControls<TValue> =
-    Object.keys(state.controls)
-      .reduce((agg, key) => Object.assign(agg, {
-        [key]: updateIdRecursive<TValue[keyof TValue]>(state.controls[key as keyof TValue], `${newId}.${key}`),
-      }), {} as FormGroupControls<TValue>);
+export function updateIdRecursiveForGroup<TValue>(
+  state: FormGroupState<TValue>,
+  newId: string
+): FormGroupState<TValue> {
+  const controls: FormGroupControls<TValue> = Object.keys(
+    state.controls
+  ).reduce(
+    (agg, key) =>
+      Object.assign(agg, {
+        [key]: updateIdRecursive<TValue[keyof TValue]>(
+          state.controls[key as keyof TValue],
+          `${newId}.${key}`
+        ),
+      }),
+    {} as FormGroupControls<TValue>
+  );
 
   return {
     ...state,
@@ -69,8 +89,13 @@ export function updateIdRecursiveForGroup<TValue>(state: FormGroupState<TValue>,
   };
 }
 
-export function updateIdRecursiveForArray<TValue>(state: FormArrayState<TValue>, newId: string): FormArrayState<TValue> {
-  const controls = state.controls.map((c, i) => updateIdRecursive(c, `${newId}.${i}`));
+export function updateIdRecursiveForArray<TValue>(
+  state: FormArrayState<TValue>,
+  newId: string
+): FormArrayState<TValue> {
+  const controls = state.controls.map((c, i) =>
+    updateIdRecursive(c, `${newId}.${i}`)
+  );
 
   return {
     ...state,
@@ -79,7 +104,10 @@ export function updateIdRecursiveForArray<TValue>(state: FormArrayState<TValue>,
   };
 }
 
-export function updateIdRecursive<TValue>(state: FormState<TValue>, newId: string): FormState<TValue> {
+export function updateIdRecursive<TValue>(
+  state: FormState<TValue>,
+  newId: string
+): FormState<TValue> {
   if (state.id === newId) {
     return state;
   }

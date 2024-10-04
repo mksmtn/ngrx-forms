@@ -1,12 +1,13 @@
-import { Actions, MarkAsTouchedAction } from '../../actions';
-import { computeGroupState, FormGroupState, KeyValue } from '../../state';
-import { childReducer, dispatchActionPerChild } from './util';
+import { ActionType } from "@ngrx/store";
+import { Actions, markAsTouchedAction } from "../../actions";
+import { computeGroupState, FormGroupState, KeyValue } from "../../state";
+import { childReducer, dispatchActionPerChild } from "./util";
 
 export function markAsTouchedReducer<TValue extends KeyValue>(
   state: FormGroupState<TValue>,
-  action: Actions<TValue>,
+  action: ActionType<Actions>
 ): FormGroupState<TValue> {
-  if (action.type !== MarkAsTouchedAction.TYPE) {
+  if (action.type !== markAsTouchedAction.type) {
     return state;
   }
 
@@ -14,7 +15,9 @@ export function markAsTouchedReducer<TValue extends KeyValue>(
     return childReducer(state, action);
   }
 
-  const controls = dispatchActionPerChild(state.controls, controlId => new MarkAsTouchedAction(controlId));
+  const controls = dispatchActionPerChild(state.controls, (controlId) =>
+    markAsTouchedAction({ controlId })
+  );
 
   if (controls === state.controls) {
     return state;
@@ -32,6 +35,6 @@ export function markAsTouchedReducer<TValue extends KeyValue>(
       wasOrShouldBeEnabled: state.isEnabled,
       wasOrShouldBeTouched: true,
       wasOrShouldBeSubmitted: state.isSubmitted,
-    },
+    }
   );
 }

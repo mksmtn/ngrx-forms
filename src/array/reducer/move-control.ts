@@ -1,8 +1,13 @@
-import { Actions, MoveArrayControlAction } from '../../actions';
-import { computeArrayState, FormArrayState } from '../../state';
-import { childReducer, updateIdRecursive } from './util';
+import { ActionType } from "@ngrx/store";
+import { Actions, moveArrayControlAction } from "../../actions";
+import { computeArrayState, FormArrayState } from "../../state";
+import { childReducer, updateIdRecursive } from "./util";
 
-export function move(array: readonly any[], fromIndex: number, toIndex: number) {
+export function move(
+  array: readonly any[],
+  fromIndex: number,
+  toIndex: number
+) {
   const item = array[fromIndex];
   const length = array.length;
   if (fromIndex > toIndex) {
@@ -25,9 +30,9 @@ export function move(array: readonly any[], fromIndex: number, toIndex: number) 
 
 export function moveControlReducer<TValue>(
   state: FormArrayState<TValue>,
-  action: Actions<TValue[]>,
+  action: ActionType<Actions>
 ): FormArrayState<TValue> {
-  if (action.type !== MoveArrayControlAction.TYPE) {
+  if (action.type !== moveArrayControlAction.type) {
     return state;
   }
   if (action.controlId !== state.id) {
@@ -42,16 +47,22 @@ export function moveControlReducer<TValue>(
   }
 
   if (fromIndex < 0 || toIndex < 0) {
-    throw new Error(`fromIndex ${fromIndex} or toIndex ${fromIndex} was negative`);
+    throw new Error(
+      `fromIndex ${fromIndex} or toIndex ${fromIndex} was negative`
+    );
   }
 
   if (fromIndex >= state.controls.length || toIndex >= state.controls.length) {
-    throw new Error(`fromIndex ${fromIndex} or toIndex ${toIndex} is out of bounds with the length of the controls ${state.controls.length}`);
+    throw new Error(
+      `fromIndex ${fromIndex} or toIndex ${toIndex} is out of bounds with the length of the controls ${state.controls.length}`
+    );
   }
 
   let controls = move(state.controls, fromIndex, toIndex);
 
-  controls = controls.map((c, i) => updateIdRecursive<any>(c, `${state.id}.${i}`));
+  controls = controls.map((c, i) =>
+    updateIdRecursive<any>(c, `${state.id}.${i}`)
+  );
 
   return computeArrayState(
     state.id,

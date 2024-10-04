@@ -1,12 +1,13 @@
-import { Actions, RemoveGroupControlAction } from '../../actions';
-import { computeGroupState, FormGroupState, KeyValue } from '../../state';
-import { childReducer } from './util';
+import { ActionType } from "@ngrx/store";
+import { Actions, removeGroupControlAction } from "../../actions";
+import { computeGroupState, FormGroupState, KeyValue } from "../../state";
+import { childReducer } from "./util";
 
 export function removeControlReducer<TValue extends KeyValue>(
   state: FormGroupState<TValue>,
-  action: Actions<TValue>,
+  action: ActionType<Actions>
 ): FormGroupState<TValue> {
-  if (action.type !== RemoveGroupControlAction.TYPE) {
+  if (action.type !== removeGroupControlAction.type) {
     return state;
   }
 
@@ -15,15 +16,19 @@ export function removeControlReducer<TValue extends KeyValue>(
   }
 
   if (!state.controls.hasOwnProperty(action.name)) {
-    throw new Error(`Group '${state.id}' does not have child control '${action.name as string}'!`); // `;
+    throw new Error(
+      `Group '${state.id}' does not have child control '${
+        action.name as string
+      }'!`
+    );
   }
 
-  const controls = Object.assign({}, state.controls);
-  delete controls[action.name];
+  const { [action.name]: _, ...controls } = state.controls;
 
   return computeGroupState(
     state.id,
-    controls,
+    // todo: better typing?
+    controls as FormGroupState<TValue>["controls"],
     state.value,
     state.errors,
     state.pendingValidations,
@@ -33,6 +38,6 @@ export function removeControlReducer<TValue extends KeyValue>(
       wasOrShouldBeEnabled: state.isEnabled,
       wasOrShouldBeTouched: state.isTouched,
       wasOrShouldBeSubmitted: state.isSubmitted,
-    },
+    }
   );
 }

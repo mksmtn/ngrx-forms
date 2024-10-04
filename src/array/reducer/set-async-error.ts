@@ -1,13 +1,14 @@
-import { Actions, SetAsyncErrorAction } from '../../actions';
-import { computeArrayState, FormArrayState } from '../../state';
-import { deepEquals } from '../../util';
-import { childReducer } from './util';
+import { ActionType } from "@ngrx/store";
+import { Actions, setAsyncErrorAction } from "../../actions";
+import { computeArrayState, FormArrayState } from "../../state";
+import { deepEquals } from "../../util";
+import { childReducer } from "./util";
 
 export function setAsyncErrorReducer<TValue>(
   state: FormArrayState<TValue>,
-  action: Actions<TValue[]>,
+  action: ActionType<Actions>
 ): FormArrayState<TValue> {
-  if (action.type !== SetAsyncErrorAction.TYPE) {
+  if (action.type !== setAsyncErrorAction.type) {
     return state;
   }
 
@@ -27,7 +28,9 @@ export function setAsyncErrorReducer<TValue>(
   }
 
   const errors = { ...state.errors, [name]: value };
-  const pendingValidations = state.pendingValidations.filter(v => v !== action.name);
+  const pendingValidations = state.pendingValidations.filter(
+    (v) => v !== action.name
+  );
 
   return computeArrayState(
     state.id,
@@ -41,6 +44,6 @@ export function setAsyncErrorReducer<TValue>(
       wasOrShouldBeEnabled: state.isEnabled,
       wasOrShouldBeTouched: state.isTouched,
       wasOrShouldBeSubmitted: state.isSubmitted,
-    },
+    }
   );
 }

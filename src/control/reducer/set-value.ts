@@ -1,11 +1,16 @@
-import { Actions, SetValueAction } from '../../actions';
-import { FormControlState, FormControlValueTypes, verifyFormControlValueIsValid } from '../../state';
+import { ActionType } from "@ngrx/store";
+import { Actions, setValueAction } from "../../actions";
+import {
+  FormControlState,
+  FormControlValueTypes,
+  verifyFormControlValueIsValid,
+} from "../../state";
 
 export function setValueReducer<TValue extends FormControlValueTypes>(
   state: FormControlState<TValue>,
-  action: Actions<TValue>,
+  action: ActionType<Actions>
 ): FormControlState<TValue> {
-  if (action.type !== SetValueAction.TYPE) {
+  if (action.type !== setValueAction.type) {
     return state;
   }
 
@@ -15,6 +20,7 @@ export function setValueReducer<TValue extends FormControlValueTypes>(
 
   return {
     ...state,
-    value: verifyFormControlValueIsValid(action.value),
+    // todo: better typing?
+    value: verifyFormControlValueIsValid<TValue>(action.value as TValue),
   };
 }

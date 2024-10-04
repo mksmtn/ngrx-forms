@@ -1,12 +1,13 @@
-import { Actions, StartAsyncValidationAction } from '../../actions';
-import { computeArrayState, FormArrayState } from '../../state';
-import { childReducer } from './util';
+import { ActionType } from "@ngrx/store";
+import { Actions, startAsyncValidationAction } from "../../actions";
+import { computeArrayState, FormArrayState } from "../../state";
+import { childReducer } from "./util";
 
 export function startAsyncValidationReducer<TValue>(
   state: FormArrayState<TValue>,
-  action: Actions<TValue[]>,
+  action: ActionType<Actions>
 ): FormArrayState<TValue> {
-  if (action.type !== StartAsyncValidationAction.TYPE) {
+  if (action.type !== startAsyncValidationAction.type) {
     return state;
   }
 
@@ -32,6 +33,6 @@ export function startAsyncValidationReducer<TValue>(
       wasOrShouldBeEnabled: state.isEnabled,
       wasOrShouldBeTouched: state.isTouched,
       wasOrShouldBeSubmitted: state.isSubmitted,
-    },
+    }
   );
 }

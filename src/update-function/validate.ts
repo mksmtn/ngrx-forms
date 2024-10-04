@@ -1,7 +1,12 @@
-import { SetErrorsAction } from '../actions';
-import { formStateReducer } from '../reducer';
-import { AbstractControlState, FormState, isFormState, ValidationErrors } from '../state';
-import { ensureState } from './util';
+import { setErrorsAction } from "../actions";
+import { formStateReducer } from "../reducer";
+import {
+  AbstractControlState,
+  FormState,
+  isFormState,
+  ValidationErrors,
+} from "../state";
+import { ensureState } from "./util";
 
 export type ValidationFn<TValue> = (value: TValue) => ValidationErrors;
 
@@ -23,7 +28,7 @@ export function validate<TValue>(
  */
 export function validate<TValue>(
   state: AbstractControlState<TValue>,
-  rest: ValidationFn<TValue>[],
+  rest: ValidationFn<TValue>[]
 ): FormState<TValue>;
 
 /**
@@ -42,24 +47,45 @@ export function validate<TValue>(
  * applying the given validation function(s) to the state's value.
  */
 export function validate<TValue>(
-  rest: ValidationFn<TValue>[],
+  rest: ValidationFn<TValue>[]
 ): (state: AbstractControlState<TValue>) => FormState<TValue>;
 
 export function validate<TValue>(
-  stateOrFunctionOrFunctionArray: FormState<TValue> | ValidationFn<TValue> | ValidationFn<TValue>[],
+  stateOrFunctionOrFunctionArray:
+    | FormState<TValue>
+    | ValidationFn<TValue>
+    | ValidationFn<TValue>[],
   functionOrFunctionArr?: ValidationFn<TValue> | ValidationFn<TValue>[],
   ...rest: ValidationFn<TValue>[]
 ) {
   if (isFormState<TValue>(stateOrFunctionOrFunctionArray)) {
-    const state = stateOrFunctionOrFunctionArray as AbstractControlState<TValue>;
-    const functionArr = Array.isArray(functionOrFunctionArr) ? functionOrFunctionArr : [functionOrFunctionArr!];
-    const errors = functionArr.concat(...rest)
-      .reduce((agg, validationFn) => Object.assign(agg, validationFn(state.value)), {} as ValidationErrors);
-    return formStateReducer<TValue>(stateOrFunctionOrFunctionArray, new SetErrorsAction(state.id, errors));
+    const state =
+      stateOrFunctionOrFunctionArray as AbstractControlState<TValue>;
+    const functionArr = Array.isArray(functionOrFunctionArr)
+      ? functionOrFunctionArr
+      : [functionOrFunctionArr!];
+    const errors = functionArr
+      .concat(...rest)
+      .reduce(
+        (agg, validationFn) => Object.assign(agg, validationFn(state.value)),
+        {} as ValidationErrors
+      );
+    return formStateReducer<TValue>(
+      stateOrFunctionOrFunctionArray,
+      setErrorsAction({ controlId: state.id, errors })
+    );
   }
 
-  const functionOrFunctionArray = stateOrFunctionOrFunctionArray as ValidationFn<TValue> | ValidationFn<TValue>[];
-  let updateFnArr = Array.isArray(functionOrFunctionArray) ? functionOrFunctionArray : [functionOrFunctionArray];
-  updateFnArr = functionOrFunctionArr === undefined ? updateFnArr : updateFnArr.concat(functionOrFunctionArr);
-  return (s: AbstractControlState<TValue>) => validate<TValue>(ensureState(s), updateFnArr.concat(rest));
+  const functionOrFunctionArray = stateOrFunctionOrFunctionArray as
+    | ValidationFn<TValue>
+    | ValidationFn<TValue>[];
+  let updateFnArr = Array.isArray(functionOrFunctionArray)
+    ? functionOrFunctionArray
+    : [functionOrFunctionArray];
+  updateFnArr =
+    functionOrFunctionArr === undefined
+      ? updateFnArr
+      : updateFnArr.concat(functionOrFunctionArr);
+  return (s: AbstractControlState<TValue>) =>
+    validate<TValue>(ensureState(s), updateFnArr.concat(rest));
 }

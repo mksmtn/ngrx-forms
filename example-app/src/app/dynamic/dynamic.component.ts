@@ -1,15 +1,24 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { select, Store } from '@ngrx/store';
-import { AddArrayControlAction, FormGroupState, RemoveArrayControlAction } from 'ngrx-forms';
-import { Observable } from 'rxjs';
-import { map, take } from 'rxjs/operators';
+import { ChangeDetectionStrategy, Component } from "@angular/core";
+import { select, Store } from "@ngrx/store";
+import {
+  addArrayControlAction,
+  FormGroupState,
+  removeArrayControlAction,
+} from "ngrx-forms";
+import { Observable } from "rxjs";
+import { map, take } from "rxjs/operators";
 
-import { CreateGroupElementAction, FormValue, RemoveGroupElementAction, State } from './dynamic.reducer';
+import {
+  CreateGroupElementAction,
+  FormValue,
+  RemoveGroupElementAction,
+  State,
+} from "./dynamic.reducer";
 
 @Component({
-  selector: 'ngf-dynamic',
-  templateUrl: './dynamic.component.html',
-  styleUrls: ['./dynamic.component.scss'],
+  selector: "ngf-dynamic",
+  templateUrl: "./dynamic.component.html",
+  styleUrls: ["./dynamic.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DynamicPageComponent {
@@ -18,9 +27,9 @@ export class DynamicPageComponent {
   groupOptions$: Observable<string[]>;
 
   constructor(private store: Store<State>) {
-    this.formState$ = store.pipe(select(s => s.dynamic.formState));
-    this.arrayOptions$ = store.pipe(select(s => s.dynamic.array.options));
-    this.groupOptions$ = store.pipe(select(s => s.dynamic.groupOptions));
+    this.formState$ = store.pipe(select((s) => s.dynamic.formState));
+    this.arrayOptions$ = store.pipe(select((s) => s.dynamic.array.options));
+    this.groupOptions$ = store.pipe(select((s) => s.dynamic.groupOptions));
   }
 
   addGroupOption() {
@@ -33,19 +42,25 @@ export class DynamicPageComponent {
   }
 
   addArrayOption(index: number) {
-    this.formState$.pipe(
-      take(1),
-      map(s => s.controls.array.id),
-      map(id => new AddArrayControlAction(id, false, index)),
-    ).subscribe(this.store);
+    this.formState$
+      .pipe(
+        take(1),
+        map((s) => s.controls.array.id),
+        map((id) =>
+          addArrayControlAction({ controlId: id, value: false, index })
+        )
+      )
+      .subscribe(this.store);
   }
 
   removeArrayOption(index: number) {
-    this.formState$.pipe(
-      take(1),
-      map(s => s.controls.array.id),
-      map(id => new RemoveArrayControlAction(id, index)),
-    ).subscribe(this.store);
+    this.formState$
+      .pipe(
+        take(1),
+        map((s) => s.controls.array.id),
+        map((id) => removeArrayControlAction({ controlId: id, index }))
+      )
+      .subscribe(this.store);
   }
 
   trackByIndex(index: number) {

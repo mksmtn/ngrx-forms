@@ -1,11 +1,12 @@
-import { Actions, ResetAction } from '../../actions';
-import { FormControlState, FormControlValueTypes } from '../../state';
+import { ActionType } from "@ngrx/store";
+import { Actions, resetAction } from "../../actions";
+import { FormControlState, FormControlValueTypes } from "../../state";
 
 export function resetReducer<TValue extends FormControlValueTypes>(
   state: FormControlState<TValue>,
-  action: Actions<TValue>,
+  action: ActionType<Actions>
 ): FormControlState<TValue> {
-  if (action.type !== ResetAction.TYPE) {
+  if (action.type !== resetAction.type) {
     return state;
   }
 
