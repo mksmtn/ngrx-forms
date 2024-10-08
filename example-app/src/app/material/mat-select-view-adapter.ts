@@ -1,26 +1,36 @@
-import { AfterViewInit, Directive, forwardRef, OnDestroy } from '@angular/core';
-import { MatSelect } from '@angular/material/select';
-import { FormViewAdapter, NGRX_FORM_VIEW_ADAPTER } from 'ngrx-forms';
-import { Subscription } from 'rxjs';
+import {
+  AfterViewInit,
+  Directive,
+  forwardRef,
+  inject,
+  OnDestroy,
+} from "@angular/core";
+import { MatSelect } from "@angular/material/select";
+import { FormViewAdapter, NGRX_FORM_VIEW_ADAPTER } from "ngrx-forms";
+import { Subscription } from "rxjs";
 
 // tslint:disable:directive-selector
 // tslint:disable:directive-class-suffix
 // necessary since material 2 does not properly export the mat-select as a NG_VALUE_ACCESSOR
 @Directive({
-  selector: 'mat-select[ngrxFormControlState]',
-  providers: [{
-    provide: NGRX_FORM_VIEW_ADAPTER,
-    useExisting: forwardRef(() => NgrxMatSelectViewAdapter),
-    multi: true,
-  }],
+  selector: "mat-select[ngrxFormControlState]",
+  providers: [
+    {
+      provide: NGRX_FORM_VIEW_ADAPTER,
+      useExisting: forwardRef(() => NgrxMatSelectViewAdapter),
+      multi: true,
+    },
+  ],
 })
-export class NgrxMatSelectViewAdapter implements FormViewAdapter, AfterViewInit, OnDestroy {
+export class NgrxMatSelectViewAdapter
+  implements FormViewAdapter, AfterViewInit, OnDestroy
+{
   private value: any;
   private subscriptions: Subscription[] = [];
 
-  constructor(private matSelect: MatSelect) {}
+  private readonly matSelect = inject(MatSelect);
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.subscriptions.push(
       this.matSelect.options.changes.subscribe(() => {
         Promise.resolve().then(() => this.matSelect.writeValue(this.value));
@@ -28,11 +38,11 @@ export class NgrxMatSelectViewAdapter implements FormViewAdapter, AfterViewInit,
     );
   }
 
-  ngOnDestroy() {
-    this.subscriptions.forEach(s => s.unsubscribe());
+  ngOnDestroy(): void {
+    this.subscriptions.forEach((s) => s.unsubscribe());
   }
 
-  setViewValue(value: any) {
+  setViewValue(value: any): void {
     this.value = value;
 
     // we have to verify that the same value is not set again since that would
@@ -41,7 +51,10 @@ export class NgrxMatSelectViewAdapter implements FormViewAdapter, AfterViewInit,
 
     if (selectedOption) {
       if (Array.isArray(selectedOption) && Array.isArray(value)) {
-        if (value.length === selectedOption.length && value.every((v, i) => v === selectedOption[i])) {
+        if (
+          value.length === selectedOption.length &&
+          value.every((v, i) => v === selectedOption[i])
+        ) {
           return;
         }
       } else if (!Array.isArray(selectedOption)) {
@@ -56,18 +69,18 @@ export class NgrxMatSelectViewAdapter implements FormViewAdapter, AfterViewInit,
     Promise.resolve().then(() => this.matSelect.writeValue(value));
   }
 
-  setOnChangeCallback(fn: any) {
-    this.matSelect.registerOnChange(value => {
+  setOnChangeCallback(fn: any): void {
+    this.matSelect.registerOnChange((value) => {
       this.value = value;
       fn(value);
     });
   }
 
-  setOnTouchedCallback(fn: any) {
+  setOnTouchedCallback(fn: any): void {
     this.matSelect.registerOnTouched(fn);
   }
 
-  setIsDisabled(isDisabled: boolean) {
+  setIsDisabled(isDisabled: boolean): void {
     this.matSelect.setDisabledState(isDisabled);
   }
 }

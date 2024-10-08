@@ -13,9 +13,9 @@ import { ActionType } from "@ngrx/store";
   styleUrls: ["./local-state-introduction.component.scss"],
 })
 export class LocalStateIntroductionComponent {
-  formState = INITIAL_FORM_STATE;
+  protected formState = INITIAL_FORM_STATE;
 
-  handleFormAction(action: ActionType<Actions>) {
+  protected handleFormAction(action: ActionType<Actions>) {
     this.formState = reducer(this.formState, action);
   }
 }

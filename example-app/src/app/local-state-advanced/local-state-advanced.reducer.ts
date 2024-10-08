@@ -1,17 +1,21 @@
-import { Action, combineReducers } from '@ngrx/store';
-import { createFormGroupState, formGroupReducer, FormGroupState, setValue, updateGroup } from 'ngrx-forms';
+import { Action, combineReducers, createAction, props } from "@ngrx/store";
+import {
+  createFormGroupState,
+  formGroupReducer,
+  FormGroupState,
+  setValue,
+  updateGroup,
+} from "ngrx-forms";
 
-export class GetManufacturersAction implements Action {
-  static readonly TYPE = 'localStateAdvanced/GET_MANUFACTURERS';
-  readonly type = GetManufacturersAction.TYPE;
-  constructor(public countryCode: string) { }
-}
+export const getManufacturersAction = createAction(
+  "localStateAdvanced/GET_MANUFACTURERS",
+  props<{ countryCode: string }>()
+);
 
-export class SetManufacturersAction implements Action {
-  static readonly TYPE = 'localStateAdvanced/SET_MANUFACTURERS';
-  readonly type = SetManufacturersAction.TYPE;
-  constructor(public manufacturers: string[]) { }
-}
+export const setManufacturersAction = createAction(
+  "localStateAdvanced/SET_MANUFACTURERS",
+  props<{ manufacturers: string[] }>()
+);
 
 export interface FormValue {
   countryCode: string;
@@ -23,11 +27,11 @@ export interface LocalState {
   formState: FormGroupState<FormValue>;
 }
 
-export const FORM_ID = 'localStateForm';
+export const FORM_ID = "localStateForm";
 
 export const INITIAL_FORM_STATE = createFormGroupState<FormValue>(FORM_ID, {
-  countryCode: '',
-  manufacturer: '',
+  countryCode: "",
+  manufacturer: "",
 });
 
 export const INITIAL_LOCAL_STATE: LocalState = {
@@ -38,8 +42,8 @@ export const INITIAL_LOCAL_STATE: LocalState = {
 const reducers = combineReducers<LocalState>({
   manufacturers(manufacturers = [], a: Action) {
     // update from loaded data
-    if (a.type === SetManufacturersAction.TYPE) {
-      return (a as SetManufacturersAction).manufacturers;
+    if (a.type === setManufacturersAction.type) {
+      return (a as ReturnType<typeof setManufacturersAction>).manufacturers;
     }
     return manufacturers;
   },
@@ -48,7 +52,10 @@ const reducers = combineReducers<LocalState>({
   },
 });
 
-export function reducer(oldState: LocalState = INITIAL_LOCAL_STATE, action: Action) {
+export function reducer(
+  oldState: LocalState = INITIAL_LOCAL_STATE,
+  action: Action
+) {
   // each reducer takes care of its individual state
   let state = reducers(oldState, action);
 
@@ -58,9 +65,9 @@ export function reducer(oldState: LocalState = INITIAL_LOCAL_STATE, action: Acti
 
   // one overarching reducer handles inter-dependencies
   const formState = updateGroup<FormValue>({
-    manufacturer: manufacturer => {
+    manufacturer: (manufacturer) => {
       if (!state.manufacturers.includes(manufacturer.value)) {
-        return setValue('')(manufacturer);
+        return setValue("")(manufacturer);
       }
       return manufacturer;
     },

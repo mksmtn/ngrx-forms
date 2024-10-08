@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from "@angular/core";
+import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { select, Store } from "@ngrx/store";
 import { FormGroupState, resetAction, setValueAction } from "ngrx-forms";
 import { Observable } from "rxjs";
@@ -18,17 +18,15 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SimpleFormNgrx8PageComponent {
-  formState$: Observable<FormGroupState<FormValue>>;
-  submittedValue$: Observable<FormValue | undefined>;
+  private readonly store = inject<Store<State>>(Store);
 
-  constructor(private store: Store<State>) {
-    this.formState$ = store.pipe(select((s) => s.simpleFormNgrx8.formState));
-    this.submittedValue$ = store.pipe(
-      select((s) => s.simpleFormNgrx8.submittedValue)
-    );
-  }
+  protected readonly formState$: Observable<FormGroupState<FormValue>> =
+    this.store.pipe(select((s) => s.simpleFormNgrx8.formState));
 
-  reset() {
+  protected readonly submittedValue$: Observable<FormValue | undefined> =
+    this.store.pipe(select((s) => s.simpleFormNgrx8.submittedValue));
+
+  protected reset() {
     this.store.dispatch(
       setValueAction({
         controlId: INITIAL_STATE.id,
@@ -38,7 +36,7 @@ export class SimpleFormNgrx8PageComponent {
     this.store.dispatch(resetAction({ controlId: INITIAL_STATE.id }));
   }
 
-  submit() {
+  protected submit() {
     this.formState$
       .pipe(
         take(1),

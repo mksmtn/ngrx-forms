@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from "@angular/core";
+import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { select, Store } from "@ngrx/store";
 import {
   addArrayControlAction,
@@ -9,9 +9,9 @@ import { Observable } from "rxjs";
 import { map, take } from "rxjs/operators";
 
 import {
-  CreateGroupElementAction,
+  createGroupElementAction,
   FormValue,
-  RemoveGroupElementAction,
+  removeGroupElementAction,
   State,
 } from "./dynamic.reducer";
 
@@ -22,26 +22,29 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DynamicPageComponent {
-  formState$: Observable<FormGroupState<FormValue>>;
-  arrayOptions$: Observable<number[]>;
-  groupOptions$: Observable<string[]>;
+  private readonly store = inject<Store<State>>(Store);
 
-  constructor(private store: Store<State>) {
-    this.formState$ = store.pipe(select((s) => s.dynamic.formState));
-    this.arrayOptions$ = store.pipe(select((s) => s.dynamic.array.options));
-    this.groupOptions$ = store.pipe(select((s) => s.dynamic.groupOptions));
-  }
+  protected readonly formState$: Observable<FormGroupState<FormValue>> =
+    this.store.pipe(select((s) => s.dynamic.formState));
 
-  addGroupOption() {
+  protected readonly arrayOptions$: Observable<number[]> = this.store.pipe(
+    select((s) => s.dynamic.array.options)
+  );
+
+  protected readonly groupOptions$: Observable<string[]> = this.store.pipe(
+    select((s) => s.dynamic.groupOptions)
+  );
+
+  protected addGroupOption(): void {
     const name = Math.random().toString(36).substr(2, 3);
-    this.store.dispatch(new CreateGroupElementAction(name));
+    this.store.dispatch(createGroupElementAction({ name }));
   }
 
-  removeGroupOption(name: string) {
-    this.store.dispatch(new RemoveGroupElementAction(name));
+  protected removeGroupOption(name: string): void {
+    this.store.dispatch(removeGroupElementAction({ name }));
   }
 
-  addArrayOption(index: number) {
+  protected addArrayOption(index: number): void {
     this.formState$
       .pipe(
         take(1),
@@ -53,7 +56,7 @@ export class DynamicPageComponent {
       .subscribe(this.store);
   }
 
-  removeArrayOption(index: number) {
+  protected removeArrayOption(index: number): void {
     this.formState$
       .pipe(
         take(1),
@@ -63,11 +66,11 @@ export class DynamicPageComponent {
       .subscribe(this.store);
   }
 
-  trackByIndex(index: number) {
+  protected trackByIndex(index: number): number {
     return index;
   }
 
-  trackById(_: number, id: string) {
+  protected trackById(_: number, id: string): string {
     return id;
   }
 }

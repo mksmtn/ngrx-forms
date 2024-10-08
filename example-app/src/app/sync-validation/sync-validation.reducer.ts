@@ -1,4 +1,4 @@
-import { Action, combineReducers } from '@ngrx/store';
+import { Action, combineReducers, createAction, props } from "@ngrx/store";
 import {
   createFormGroupState,
   disable,
@@ -8,10 +8,10 @@ import {
   updateGroup,
   validate,
   ValidationErrors,
-} from 'ngrx-forms';
-import { minLength, required, requiredTrue } from 'ngrx-forms/validation';
+} from "ngrx-forms";
+import { minLength, required, requiredTrue } from "ngrx-forms/validation";
 
-import { State as RootState } from '../app.reducer';
+import { State as RootState } from "../app.reducer";
 
 export interface PasswordValue {
   password: string;
@@ -35,29 +35,28 @@ export interface State extends RootState {
   };
 }
 
-export class SetSubmittedValueAction implements Action {
-  static readonly TYPE = 'syncValidation/SET_SUBMITTED_VALUE';
-  readonly type = SetSubmittedValueAction.TYPE;
-  constructor(public submittedValue: FormValue) { }
-}
+export const setSubmittedValueAction = createAction(
+  "syncValidation/SET_SUBMITTED_VALUE",
+  props<{ submittedValue: FormValue }>()
+);
 
-export const FORM_ID = 'syncValidation';
+export const FORM_ID = "syncValidation";
 
 export const INITIAL_STATE = createFormGroupState<FormValue>(FORM_ID, {
-  userName: '',
+  userName: "",
   createAccount: true,
   password: {
-    password: '',
-    confirmPassword: '',
+    password: "",
+    confirmPassword: "",
   },
   dayOfBirth: 1,
-  monthOfBirth: 'January',
+  monthOfBirth: "January",
   yearOfBirth: 1970,
   agreeToTermsOfUse: false,
 });
 
 // @ts-ignore
-declare module 'ngrx-forms' {
+declare module "ngrx-forms" {
   interface ValidationErrors {
     passwordMatch?: PasswordValue;
   }
@@ -89,13 +88,17 @@ export const validateAndUpdateForm = updateGroup<FormValue>({
   agreeToTermsOfUse: validate(requiredTrue),
 });
 
-const reducers = combineReducers<State['syncValidation'], any>({
+const reducers = combineReducers<State["syncValidation"], any>({
   formState(s = INITIAL_STATE, a: Action) {
     return validateAndUpdateForm(formGroupReducer(s, a));
   },
-  submittedValue(s: FormValue | undefined, a: SetSubmittedValueAction) {
+  submittedValue(
+    s: FormValue | undefined,
+    a: ReturnType<typeof setSubmittedValueAction>
+  ) {
+    // todo: rewrite
     switch (a.type) {
-      case SetSubmittedValueAction.TYPE:
+      case setSubmittedValueAction.type:
         return a.submittedValue;
 
       default:
@@ -104,6 +107,6 @@ const reducers = combineReducers<State['syncValidation'], any>({
   },
 });
 
-export function reducer(s: State['syncValidation'], a: Action) {
+export function reducer(s: State["syncValidation"], a: Action) {
   return reducers(s, a);
 }

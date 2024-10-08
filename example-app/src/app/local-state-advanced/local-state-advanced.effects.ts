@@ -1,29 +1,36 @@
-import { Injectable } from '@angular/core';
-import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { Action } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import { debounceTime, delay, map } from 'rxjs/operators';
+import { Injectable } from "@angular/core";
+import { Actions, createEffect, ofType } from "@ngrx/effects";
+import { Action } from "@ngrx/store";
+import { Observable } from "rxjs";
+import { debounceTime, delay, map } from "rxjs/operators";
 
-import { GetManufacturersAction, SetManufacturersAction } from './local-state-advanced.reducer';
+import {
+  getManufacturersAction,
+  setManufacturersAction,
+} from "./local-state-advanced.reducer";
 
 @Injectable()
 export class LocalStateAdvancedEffects {
+  readonly getManufacturers$: Observable<Action> = createEffect(() =>
+    this.actions$.pipe(
+      ofType(getManufacturersAction),
+      debounceTime(300),
+      delay(1000),
+      map((action) => {
+        if (action.countryCode === "US") {
+          return setManufacturersAction({
+            manufacturers: ["Ford", "Chevrolet"],
+          });
+        } else if (action.countryCode === "UK") {
+          return setManufacturersAction({
+            manufacturers: ["Aston Martin", "Jaguar"],
+          });
+        } else {
+          return setManufacturersAction({ manufacturers: [] });
+        }
+      })
+    )
+  );
 
-  
-  getManufacturers$: Observable<Action> = createEffect(() => this.actions$.pipe(
-    ofType(GetManufacturersAction.TYPE),
-    debounceTime(300),
-    delay(1000),
-    map((action: GetManufacturersAction) => {
-      if (action.countryCode === 'US') {
-        return new SetManufacturersAction(['Ford', 'Chevrolet']);
-      } else if (action.countryCode === 'UK') {
-        return new SetManufacturersAction(['Aston Martin', 'Jaguar']);
-      } else {
-        return new SetManufacturersAction([]);
-      }
-    })
-  ));
-
-  constructor(private actions$: Actions) { }
+  constructor(private readonly actions$: Actions) {}
 }

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from "@angular/core";
+import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { select, Store } from "@ngrx/store";
 import { FormGroupState, resetAction, setValueAction } from "ngrx-forms";
 import { Observable } from "rxjs";
@@ -7,7 +7,7 @@ import { filter, map, take } from "rxjs/operators";
 import {
   FormValue,
   INITIAL_STATE,
-  SetSubmittedValueAction,
+  setSubmittedValueAction,
   State,
 } from "./sync-validation.reducer";
 
@@ -18,11 +18,17 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SyncValidationPageComponent {
-  formState$: Observable<FormGroupState<FormValue>>;
-  submittedValue$: Observable<FormValue | undefined>;
+  private readonly store = inject<Store<State>>(Store);
 
-  days = Array.from(Array(31).keys());
-  months = [
+  protected readonly formState$: Observable<FormGroupState<FormValue>> =
+    this.store.pipe(select((s) => s.syncValidation.formState));
+
+  protected readonly submittedValue$: Observable<FormValue | undefined> =
+    this.store.pipe(select((s) => s.syncValidation.submittedValue));
+
+  protected readonly days = Array.from(Array(31).keys());
+
+  protected readonly months = [
     "January",
     "Febuary",
     "March",
@@ -36,16 +42,10 @@ export class SyncValidationPageComponent {
     "November",
     "December",
   ];
-  years = Array.from(Array(115).keys()).map((i) => i + 1910);
 
-  constructor(private store: Store<State>) {
-    this.formState$ = store.pipe(select((s) => s.syncValidation.formState));
-    this.submittedValue$ = store.pipe(
-      select((s) => s.syncValidation.submittedValue)
-    );
-  }
+  protected readonly years = Array.from(Array(115).keys()).map((i) => i + 1910);
 
-  reset() {
+  protected reset() {
     this.store.dispatch(
       setValueAction({
         controlId: INITIAL_STATE.id,
@@ -55,12 +55,12 @@ export class SyncValidationPageComponent {
     this.store.dispatch(resetAction({ controlId: INITIAL_STATE.id }));
   }
 
-  submit() {
+  protected submit() {
     this.formState$
       .pipe(
         take(1),
         filter((s) => s.isValid),
-        map((fs) => new SetSubmittedValueAction(fs.value))
+        map((fs) => setSubmittedValueAction({ submittedValue: fs.value }))
       )
       .subscribe(this.store);
   }

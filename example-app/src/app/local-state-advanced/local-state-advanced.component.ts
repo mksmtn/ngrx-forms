@@ -10,7 +10,7 @@ import { Actions, setValueAction } from "ngrx-forms";
 import { Subscription } from "rxjs";
 
 import {
-  GetManufacturersAction,
+  getManufacturersAction,
   INITIAL_LOCAL_STATE,
   reducer,
 } from "./local-state-advanced.reducer";
@@ -22,13 +22,13 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LocalStateAdvancedComponent implements OnInit, OnDestroy {
-  localState = INITIAL_LOCAL_STATE;
+  protected localState = INITIAL_LOCAL_STATE;
 
   private subscription = new Subscription();
 
   constructor(
-    private actionsSubject: ActionsSubject,
-    private cd: ChangeDetectorRef
+    private readonly actionsSubject: ActionsSubject,
+    private readonly cd: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -54,9 +54,9 @@ export class LocalStateAdvancedComponent implements OnInit, OnDestroy {
       action.type === setValueAction.type &&
       action.controlId === this.localState.formState.controls.countryCode.id
     ) {
-      // todo: can be better typed?
       this.actionsSubject.next(
-        new GetManufacturersAction(action.value as string)
+        // todo: can be better typed?
+        getManufacturersAction({ countryCode: action.value as string })
       );
     }
   }

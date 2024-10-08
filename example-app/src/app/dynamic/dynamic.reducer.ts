@@ -1,4 +1,4 @@
-import { Action, combineReducers } from "@ngrx/store";
+import { Action, combineReducers, createAction, props } from "@ngrx/store";
 import {
   addArrayControlAction,
   addGroupControl,
@@ -28,18 +28,15 @@ export interface State extends RootState {
   };
 }
 
-// todo: rewrite
-export class CreateGroupElementAction implements Action {
-  static readonly TYPE = "dynamic/CREATE_GROUP_ELEMENT";
-  readonly type = CreateGroupElementAction.TYPE;
-  constructor(public name: string) {}
-}
+export const createGroupElementAction = createAction(
+  "dynamic/CREATE_GROUP_ELEMENT",
+  props<{ name: string }>()
+);
 
-export class RemoveGroupElementAction implements Action {
-  static readonly TYPE = "dynamic/REMOVE_GROUP_ELEMENT";
-  readonly type = RemoveGroupElementAction.TYPE;
-  constructor(public name: string) {}
-}
+export const removeGroupElementAction = createAction(
+  "dynamic/REMOVE_GROUP_ELEMENT",
+  props<{ name: string }>()
+);
 
 export const FORM_ID = "dynamic";
 
@@ -53,13 +50,15 @@ export const INITIAL_STATE = createFormGroupState<FormValue>(FORM_ID, {
 
 export function formStateReducer(
   s = INITIAL_STATE,
-  a: CreateGroupElementAction | RemoveGroupElementAction
+  a:
+    | ReturnType<typeof createGroupElementAction>
+    | ReturnType<typeof removeGroupElementAction>
 ) {
   s = formGroupReducer(s, a);
 
   switch (a.type) {
     // todo: rewrite
-    case CreateGroupElementAction.TYPE:
+    case createGroupElementAction.type:
       return updateGroup<FormValue>({
         group: (group) => {
           const newGroup = addGroupControl(group, a.name, false);
@@ -72,7 +71,7 @@ export function formStateReducer(
         },
       })(s);
 
-    case RemoveGroupElementAction.TYPE:
+    case removeGroupElementAction.type:
       return updateGroup<FormValue>({
         group: (group) => {
           const newValue = { ...group.value };
@@ -128,13 +127,15 @@ const reducers = combineReducers<State["dynamic"], any>({
   },
   groupOptions(
     s: string[] = ["abc", "xyz"],
-    a: CreateGroupElementAction | RemoveGroupElementAction
+    a:
+      | ReturnType<typeof createGroupElementAction>
+      | ReturnType<typeof removeGroupElementAction>
   ) {
     switch (a.type) {
-      case CreateGroupElementAction.TYPE:
+      case createGroupElementAction.type:
         return [...s, a.name];
 
-      case RemoveGroupElementAction.TYPE:
+      case removeGroupElementAction.type:
         return s.filter((i) => i !== a.name);
 
       default:

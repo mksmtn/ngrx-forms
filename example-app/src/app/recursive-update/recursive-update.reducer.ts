@@ -1,4 +1,4 @@
-import { Action, combineReducers } from '@ngrx/store';
+import { Action, combineReducers, createAction } from "@ngrx/store";
 import {
   createFormGroupState,
   disable,
@@ -8,9 +8,9 @@ import {
   setUserDefinedProperty,
   updateGroup,
   updateRecursive,
-} from 'ngrx-forms';
+} from "ngrx-forms";
 
-import { State as RootState } from '../app.reducer';
+import { State as RootState } from "../app.reducer";
 
 export interface FormValue {
   firstName: string;
@@ -28,52 +28,48 @@ export interface State extends RootState {
   };
 }
 
-export class BlockUIAction implements Action {
-  static readonly TYPE = 'recursiveUpdate/BLOCK_UI';
-  readonly type = BlockUIAction.TYPE;
-}
+export const blockUIAction = createAction("recursiveUpdate/BLOCK_UI");
 
-export class UnblockUIAction implements Action {
-  static readonly TYPE = 'dynamic/UNBLOCK_UI';
-  readonly type = UnblockUIAction.TYPE;
-}
+export const unblockUIAction = createAction("dynamic/UNBLOCK_UI");
 
-export const FORM_ID = 'recursiveUpdate';
+export const FORM_ID = "recursiveUpdate";
 
 export const INITIAL_STATE = updateGroup<FormValue>(
   createFormGroupState<FormValue>(FORM_ID, {
-    firstName: '',
-    lastName: '',
-    email: '',
-    sex: '',
-    favoriteColor: '',
+    firstName: "",
+    lastName: "",
+    email: "",
+    sex: "",
+    favoriteColor: "",
     employed: false,
-    notes: '',
+    notes: "",
   }),
   {
     employed: disable,
     notes: disable,
     sex: disable,
-  },
+  }
 );
 
-export function formStateReducer(state = INITIAL_STATE, a: BlockUIAction | UnblockUIAction) {
+export function formStateReducer(
+  state = INITIAL_STATE,
+  a: ReturnType<typeof blockUIAction> | ReturnType<typeof unblockUIAction>
+) {
   state = formGroupReducer(state, a);
 
+  // todo: rewrite
   switch (a.type) {
-    case BlockUIAction.TYPE: {
-      state = updateRecursive(
-        state,
-        s => setUserDefinedProperty(s, 'wasDisabled', s.isDisabled),
+    case blockUIAction.type: {
+      state = updateRecursive(state, (s) =>
+        setUserDefinedProperty(s, "wasDisabled", s.isDisabled)
       );
       return disable(state);
     }
 
-    case UnblockUIAction.TYPE: {
+    case unblockUIAction.type: {
       state = enable(state);
-      return updateRecursive(
-        state,
-        s => s.userDefinedProperties.wasDisabled ? disable(s) : s,
+      return updateRecursive(state, (s) =>
+        s.userDefinedProperties.wasDisabled ? disable(s) : s
       );
     }
 
@@ -83,10 +79,10 @@ export function formStateReducer(state = INITIAL_STATE, a: BlockUIAction | Unblo
   }
 }
 
-const reducers = combineReducers<State['recursiveUpdate'], any>({
+const reducers = combineReducers<State["recursiveUpdate"], any>({
   formState: formStateReducer,
 });
 
-export function reducer(s: State['recursiveUpdate'], a: Action) {
+export function reducer(s: State["recursiveUpdate"], a: Action) {
   return reducers(s, a);
 }

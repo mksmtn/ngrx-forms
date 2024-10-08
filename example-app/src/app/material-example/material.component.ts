@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from "@angular/core";
+import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { select, Store } from "@ngrx/store";
 import {
   FormGroupState,
@@ -24,17 +24,20 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DynamicPageComponent {
-  formState$: Observable<FormGroupState<FormValue>>;
-  submittedValue$: Observable<FormValue | undefined>;
+  private readonly store = inject<Store<State>>(Store);
 
-  constructor(private store: Store<State>) {
-    this.formState$ = store.pipe(select((s) => s.material.formState));
-    this.submittedValue$ = store.pipe(select((s) => s.material.submittedValue));
-  }
+  protected readonly formState$: Observable<FormGroupState<FormValue>> =
+    this.store.pipe(select((s) => s.material.formState));
 
-  hobbyOptions = ["Sports", "Video Games"];
+  protected readonly submittedValue$: Observable<FormValue | undefined> =
+    this.store.pipe(select((s) => s.material.submittedValue));
 
-  dateValueConverter: NgrxValueConverter<Date | null, string | null> = {
+  protected readonly hobbyOptions = ["Sports", "Video Games"];
+
+  protected readonly dateValueConverter: NgrxValueConverter<
+    Date | null,
+    string | null
+  > = {
     convertViewToStateValue(value) {
       if (value === null) {
         return null;
@@ -51,7 +54,7 @@ export class DynamicPageComponent {
       NgrxValueConverters.dateToISOString.convertStateToViewValue,
   };
 
-  reset() {
+  protected reset(): void {
     this.store.dispatch(
       setValueAction({
         controlId: INITIAL_STATE.id,
@@ -61,7 +64,7 @@ export class DynamicPageComponent {
     this.store.dispatch(resetAction({ controlId: INITIAL_STATE.id }));
   }
 
-  submit() {
+  protected submit(): void {
     this.formState$
       .pipe(
         take(1),

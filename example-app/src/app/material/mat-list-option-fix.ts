@@ -1,6 +1,5 @@
-
-import { Directive, Host, OnDestroy } from '@angular/core';
-import { MatListOption } from '@angular/material/list';
+import { Directive, inject, OnDestroy } from "@angular/core";
+import { MatListOption } from "@angular/material/list";
 
 /**
  * This directive fixes an issue with the selection list component
@@ -22,12 +21,14 @@ import { MatListOption } from '@angular/material/list';
  */
 @Directive({
   // tslint:disable-next-line:directive-selector
-  selector: 'mat-list-option',
+  selector: "mat-list-option",
 })
 export class MatListOptionFixDirective implements OnDestroy {
-  constructor(@Host() private matDirective: MatListOption) { }
+  private readonly matDirective = inject(MatListOption, { host: true });
 
-  ngOnDestroy() {
-    this.matDirective.selectionList = { _reportValueChange: () => void 0 } as any;
+  ngOnDestroy(): void {
+    this.matDirective.selectionList = {
+      _reportValueChange: () => void 0,
+    } as any;
   }
 }

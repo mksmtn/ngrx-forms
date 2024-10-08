@@ -17,7 +17,7 @@ import {
   switchMap,
 } from "rxjs/operators";
 
-import { SetSearchResultAction, State } from "./async-validation.reducer";
+import { setSearchResultAction, State } from "./async-validation.reducer";
 
 @Injectable()
 export class AsyncValidationEffects {
@@ -50,9 +50,9 @@ export class AsyncValidationEffects {
               mergeMap((resp: any) => {
                 if (resp.totalItems > 0) {
                   return [
-                    new SetSearchResultAction(
-                      resp.items.map((i: any) => i.volumeInfo.title)
-                    ),
+                    setSearchResultAction({
+                      results: resp.items.map((i: any) => i.volumeInfo.title),
+                    }),
                     clearAsyncErrorAction({
                       controlId: fs.controls.searchTerm.id,
                       name: "exists",
@@ -61,7 +61,7 @@ export class AsyncValidationEffects {
                 }
 
                 return [
-                  new SetSearchResultAction([]),
+                  setSearchResultAction({ results: [] }),
                   setAsyncErrorAction({
                     controlId: fs.controls.searchTerm.id,
                     name: "exists",
@@ -70,7 +70,7 @@ export class AsyncValidationEffects {
                 ];
               }),
               catchError((_) => [
-                new SetSearchResultAction([]),
+                setSearchResultAction({ results: [] }),
                 setAsyncErrorAction({
                   controlId: fs.controls.searchTerm.id,
                   name: "exists",
