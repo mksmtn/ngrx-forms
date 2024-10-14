@@ -5,7 +5,7 @@ import {
   inject,
   OnDestroy,
 } from "@angular/core";
-import { MatSelect } from "@angular/material/select";
+import { MatLegacySelect as MatSelect } from "@angular/material/legacy-select";
 import { FormViewAdapter, NGRX_FORM_VIEW_ADAPTER } from "ngrx-forms";
 import { Subscription } from "rxjs";
 
