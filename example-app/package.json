@@ -51,6 +51,6 @@
     "karma-spec-reporter": "0.0.34",
     "ts-node": "10.9.1",
     "tslint": "~6.1.0",
-    "typescript": "~5.1.0"
+    "typescript": "~5.4.0"
   }
 }
