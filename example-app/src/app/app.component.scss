@@ -8,7 +8,7 @@
   display: flex;
 }
 
-.mat-card.todo-list {
+mat-card.todo-list {
   width: 500px;
 }
 
@@ -16,20 +16,20 @@
   margin-bottom: 20px;
 }
 
-.mat-card.state {
+mat-card.state {
   width: 400px;
   margin-left: 20px;
 }
 
-.mat-card-header {
+mat-card-header {
   display: flex;
   justify-content: center;
 }
 
-.mat-card-title {
+mat-card-title {
   font-size: 200%;
 }
 
-.mat-list-item:not(:last-child) {
+mat-list-item:not(:last-child) {
   border-bottom: 1px solid rgba(0, 0, 0, .12);
 }

@@ -10,6 +10,7 @@ import { provideHttpClient } from "@angular/common/http";
 import { provideRouter } from "@angular/router";
 import { routes } from "./app/app.routes";
 import { provideStoreDevtools } from "@ngrx/store-devtools";
+import { provideStore } from "@ngrx/store";
 
 if (environment.production) {
   enableProdMode();
@@ -20,6 +21,7 @@ bootstrapApplication(AppComponent, {
     provideAnimations(),
     provideHttpClient(),
     provideRouter(routes),
+    provideStore(),
     provideRouterStore(),
     provideStoreDevtools({
       logOnly: environment.production,

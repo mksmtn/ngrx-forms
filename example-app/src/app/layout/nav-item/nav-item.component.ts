@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component, Input } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  input,
+} from "@angular/core";
 import { MatLineModule } from "@angular/material/core";
 import { MatListModule } from "@angular/material/list";
 import { RouterLink, RouterLinkActive } from "@angular/router";
@@ -12,6 +17,9 @@ import { RouterLink, RouterLinkActive } from "@angular/router";
   imports: [RouterLink, RouterLinkActive, MatLineModule, MatListModule],
 })
 export class NavItemComponent {
-  @Input() hint = "";
-  @Input() routerLink: string | any[] = "/";
+  hint = input("");
+
+  routerLink = input<string | string[]>("/");
+
+  protected lines = computed(() => (this.hint() ? 3 : 1));
 }
