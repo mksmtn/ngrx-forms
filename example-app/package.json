@@ -26,7 +26,6 @@
     "@ngrx/router-store": "18.1.0",
     "@ngrx/store": "18.1.0",
     "@ngrx/store-devtools": "18.1.0",
-    "core-js": "3.26.0",
     "ngrx-forms": "file:../ngrx-forms-9.0.0.tgz",
     "prismjs": "1.29.0",
     "rxjs": "7.5.7",
