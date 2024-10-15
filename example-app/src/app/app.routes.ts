@@ -1,43 +1,61 @@
 import { Routes } from "@angular/router";
 import { provideState } from "@ngrx/store";
+import { provideEffects } from "@ngrx/effects";
 import { reducer as arrayReducer } from "./array/array.reducer";
+import { reducer as valueConversionReducer } from "./value-conversion/value-conversion.reducer";
+import { reducer as syncValidationReducer } from "./sync-validation/sync-validation.reducer";
+import { reducer as simpleFormReducer } from "./simple-form/simple-form.reducer";
+import { reducer as simpleFormNgrx8Reducer } from "./simple-form-ngrx8/simple-form-ngrx8.reducer";
+import { reducer as recursiveUpdateReducer } from "./recursive-update/recursive-update.reducer";
+import { reducer as materialReducer } from "./material-example/material.reducer";
+import { reducer as dynamicReducer } from "./dynamic/dynamic.reducer";
+import { reducer as asyncValidationReducer } from "./async-validation/async-validation.reducer";
+import * as asyncValidationEffects from "./async-validation/async-validation.effects";
+import * as localStateAdvancedEffects from "./local-state-advanced/local-state-advanced.effects";
 
 export const routes: Routes = [
   { path: "", redirectTo: "/introduction", pathMatch: "full" },
   {
     path: "introduction",
-    loadChildren: () =>
-      import("./introduction/introduction.module").then(
-        (m) => m.IntroductionModule
+    loadComponent: () =>
+      import("./introduction/introduction.component").then(
+        (m) => m.IntroductionPageComponent
       ),
   },
   {
     path: "simpleForm",
-    loadChildren: () =>
-      import("./simple-form/simple-form.module").then(
-        (m) => m.SimpleFormModule
+    loadComponent: () =>
+      import("./simple-form/simple-form.component").then(
+        (m) => m.SimpleFormPageComponent
       ),
+    providers: [provideState("simpleForm", simpleFormReducer)],
   },
   {
     path: "simpleFormNgrx8",
-    loadChildren: () =>
-      import("./simple-form-ngrx8/simple-form-ngrx8.module").then(
-        (m) => m.SimpleFormNgrx8Module
+    loadComponent: () =>
+      import("./simple-form-ngrx8/simple-form-ngrx8.component").then(
+        (m) => m.SimpleFormNgrx8PageComponent
       ),
+    providers: [provideState("simpleFormNgrx8", simpleFormNgrx8Reducer)],
   },
   {
     path: "syncValidation",
-    loadChildren: () =>
-      import("./sync-validation/sync-validation.module").then(
-        (m) => m.SyncValidationModule
+    loadComponent: () =>
+      import("./sync-validation/sync-validation.component").then(
+        (m) => m.SyncValidationPageComponent
       ),
+    providers: [provideState("syncValidation", syncValidationReducer)],
   },
   {
     path: "asyncValidation",
-    loadChildren: () =>
-      import("./async-validation/async-validation.module").then(
-        (m) => m.AsyncValidationModule
+    loadComponent: () =>
+      import("./async-validation/async-validation.component").then(
+        (m) => m.AsyncValidationPageComponent
       ),
+    providers: [
+      provideState("asyncValidation", asyncValidationReducer),
+      provideEffects(asyncValidationEffects),
+    ],
   },
   {
     path: "array",
@@ -47,8 +65,9 @@ export const routes: Routes = [
   },
   {
     path: "dynamic",
-    loadChildren: () =>
-      import("./dynamic/dynamic.module").then((m) => m.DynamicModule),
+    loadComponent: () =>
+      import("./dynamic/dynamic.component").then((m) => m.DynamicPageComponent),
+    providers: [provideState("dynamic", dynamicReducer)],
   },
   {
     path: "valueBoxing",
@@ -59,38 +78,47 @@ export const routes: Routes = [
   },
   {
     path: "valueConversion",
-    loadChildren: () =>
-      import("./value-conversion/value-conversion.module").then(
-        (m) => m.ValueConversionModule
+    loadComponent: () =>
+      import("./value-conversion/value-conversion.component").then(
+        (m) => m.ValueConversionPageComponent
       ),
+    providers: [provideState("valueConversion", valueConversionReducer)],
   },
   {
     path: "recursiveUpdate",
-    loadChildren: () =>
-      import("./recursive-update/recursive-update.module").then(
-        (m) => m.RecursiveUpdateModule
+    loadComponent: () =>
+      import("./recursive-update/recursive-update.component").then(
+        (m) => m.RecursiveUpdatePageComponent
       ),
+    providers: [provideState("recursiveUpdate", recursiveUpdateReducer)],
   },
   {
     path: "material",
-    loadChildren: () =>
-      import("./material-example/material.module").then(
-        (m) => m.MaterialExampleModule
+    loadComponent: () =>
+      import("./material-example/material.component").then(
+        (m) => m.DynamicPageComponent
       ),
+
+    providers: [provideState("material", materialReducer)],
   },
   {
     path: "localStateIntroduction",
-    loadChildren: () =>
-      import("./local-state-introduction/local-state-introduction.module").then(
-        (m) => m.LocalStateIntroductionModule
-      ),
+    loadComponent: () =>
+      import(
+        "./local-state-introduction/local-state-introduction.component"
+      ).then((m) => m.LocalStateIntroductionComponent),
   },
   {
     path: "localStateAdvanced",
-    loadChildren: () =>
-      import("./local-state-advanced/local-state-advanced.module").then(
-        (m) => m.LocalStateAdvancedModule
+    loadComponent: () =>
+      import("./local-state-advanced/local-state-advanced.component").then(
+        (m) => m.LocalStateAdvancedComponent
       ),
+    providers: [
+      // Notice that StoreModule.forFeature is not included here!
+      // @todo: try not proving effects here
+      provideEffects(localStateAdvancedEffects),
+    ],
   },
   { path: "**", redirectTo: "/introduction" },
 ];

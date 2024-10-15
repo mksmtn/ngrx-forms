@@ -1,10 +1,14 @@
 import { ChangeDetectionStrategy, Component } from "@angular/core";
+import { LayoutModule } from "./layout/layout.module";
+import { RouterLink, RouterOutlet } from "@angular/router";
 
 @Component({
   selector: "ngf-app",
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [LayoutModule, RouterOutlet, RouterLink],
 })
 export class AppComponent {
   protected readonly examples = [

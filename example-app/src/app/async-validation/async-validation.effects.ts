@@ -1,5 +1,4 @@
 import { HttpClient } from "@angular/common/http";
-import { Injectable } from "@angular/core";
 import { createEffect } from "@ngrx/effects";
 import { Action, select, Store } from "@ngrx/store";
 import {
@@ -7,7 +6,7 @@ import {
   setAsyncErrorAction,
   startAsyncValidationAction,
 } from "ngrx-forms";
-import { concat, Observable, timer } from "rxjs";
+import { concat, timer } from "rxjs";
 import {
   catchError,
   distinct,
@@ -18,11 +17,11 @@ import {
 } from "rxjs/operators";
 
 import { setSearchResultAction, State } from "./async-validation.reducer";
+import { inject } from "@angular/core";
 
-@Injectable()
-export class AsyncValidationEffects {
-  searchBooks$: Observable<Action> = createEffect(() =>
-    this.store.pipe(
+export const searchBooksEffect = createEffect(
+  (store = inject<Store<State>>(Store), httpClient = inject(HttpClient)) =>
+    store.pipe(
       select((s) => s.asyncValidation.formState),
       filter(
         (fs) =>
@@ -39,7 +38,7 @@ export class AsyncValidationEffects {
               })
             )
           ),
-          this.httpClient
+          httpClient
             .get(`https://www.googleapis.com/books/v1/volumes`, {
               params: {
                 q: fs.value.searchTerm,
@@ -80,8 +79,6 @@ export class AsyncValidationEffects {
             )
         )
       )
-    )
-  );
-
-  constructor(private store: Store<State>, private httpClient: HttpClient) {}
-}
+    ),
+  { functional: true }
+);

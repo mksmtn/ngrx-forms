@@ -1,7 +1,7 @@
 import { Directive, inject, Input } from "@angular/core";
-import { MatLegacyChipList as MatChipList } from "@angular/material/legacy-chips";
-import { MatLegacyInput as MatInput } from "@angular/material/legacy-input";
-import { MatLegacySelect as MatSelect } from "@angular/material/legacy-select";
+import { MatChipGrid } from "@angular/material/chips";
+import { MatInput } from "@angular/material/input";
+import { MatSelect } from "@angular/material/select";
 import { FormControlState } from "ngrx-forms";
 
 @Directive({
@@ -23,15 +23,15 @@ export class CustomErrorStateMatcherDirective {
       this.select.stateChanges.next();
     }
 
-    if (this.chipList) {
-      this.chipList.errorState = errorsAreShown;
-      this.chipList.stateChanges.next();
+    if (this.chipGrid) {
+      this.chipGrid.errorState = errorsAreShown;
+      this.chipGrid.stateChanges.next();
     }
   }
 
   private readonly input = inject(MatInput, { optional: true, host: true });
   private readonly select = inject(MatSelect, { optional: true, host: true });
-  private readonly chipList = inject(MatChipList, {
+  private readonly chipGrid = inject(MatChipGrid, {
     optional: true,
     host: true,
   });

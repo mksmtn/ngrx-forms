@@ -1,8 +1,16 @@
-import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
-import { select, Store } from "@ngrx/store";
-import { FormGroupState, resetAction, setValueAction } from "ngrx-forms";
-import { Observable } from "rxjs";
-import { filter, map, take } from "rxjs/operators";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  Signal,
+} from "@angular/core";
+import { Store } from "@ngrx/store";
+import {
+  FormGroupState,
+  NgrxFormsModule,
+  resetAction,
+  setValueAction,
+} from "ngrx-forms";
 
 import {
   FormValue,
@@ -10,21 +18,25 @@ import {
   setSubmittedValueAction,
   State,
 } from "./sync-validation.reducer";
+import { JsonPipe } from "@angular/common";
+import { SharedModule } from "../shared/shared.module";
 
 @Component({
   selector: "ngf-sync-validation",
   templateUrl: "./sync-validation.component.html",
   styleUrls: ["./sync-validation.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [JsonPipe, NgrxFormsModule, SharedModule],
 })
 export class SyncValidationPageComponent {
   private readonly store = inject<Store<State>>(Store);
 
-  protected readonly formState$: Observable<FormGroupState<FormValue>> =
-    this.store.pipe(select((s) => s.syncValidation.formState));
+  protected readonly formState: Signal<FormGroupState<FormValue>> =
+    this.store.selectSignal((s) => s.syncValidation.formState);
 
-  protected readonly submittedValue$: Observable<FormValue | undefined> =
-    this.store.pipe(select((s) => s.syncValidation.submittedValue));
+  protected readonly submittedValue: Signal<FormValue | undefined> =
+    this.store.selectSignal((s) => s.syncValidation.submittedValue);
 
   protected readonly days = Array.from(Array(31).keys());
 
@@ -56,12 +68,11 @@ export class SyncValidationPageComponent {
   }
 
   protected submit() {
-    this.formState$
-      .pipe(
-        take(1),
-        filter((s) => s.isValid),
-        map((fs) => setSubmittedValueAction({ submittedValue: fs.value }))
-      )
-      .subscribe(this.store);
+    if (this.formState().isValid) {
+      const action = setSubmittedValueAction({
+        submittedValue: this.formState().value,
+      });
+      this.store.dispatch(action);
+    }
   }
 }

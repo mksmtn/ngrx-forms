@@ -6,7 +6,7 @@ import {
   OnInit,
 } from "@angular/core";
 import { Action, ActionsSubject, ActionType } from "@ngrx/store";
-import { Actions, setValueAction } from "ngrx-forms";
+import { Actions, NgrxFormsModule, setValueAction } from "ngrx-forms";
 import { Subscription } from "rxjs";
 
 import {
@@ -14,12 +14,15 @@ import {
   INITIAL_LOCAL_STATE,
   reducer,
 } from "./local-state-advanced.reducer";
+import { SharedModule } from "../shared/shared.module";
 
 @Component({
   selector: "ngf-local-state-advanced",
   templateUrl: "./local-state-advanced.component.html",
   styleUrls: ["./local-state-advanced.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [NgrxFormsModule, SharedModule],
 })
 export class LocalStateAdvancedComponent implements OnInit, OnDestroy {
   protected localState = INITIAL_LOCAL_STATE;

@@ -1,12 +1,29 @@
-import { enableProdMode } from '@angular/core';
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { enableProdMode } from "@angular/core";
 
-import { AppModule } from './app/app.module';
-import { environment } from './environments/environment';
+import { environment } from "./environments/environment";
+import { bootstrapApplication } from "@angular/platform-browser";
+import { AppComponent } from "./app/app.component";
+import { provideRouterStore, RouterStateSerializer } from "@ngrx/router-store";
+import { CustomRouterStateSerializer } from "./app/shared/utils";
+import { provideAnimations } from "@angular/platform-browser/animations";
+import { provideHttpClient } from "@angular/common/http";
+import { provideRouter } from "@angular/router";
+import { routes } from "./app/app.routes";
+import { provideStoreDevtools } from "@ngrx/store-devtools";
 
 if (environment.production) {
   enableProdMode();
 }
 
-platformBrowserDynamic().bootstrapModule(AppModule)
-  .catch(err => console.log(err));
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideAnimations(),
+    provideHttpClient(),
+    provideRouter(routes),
+    provideRouterStore(),
+    provideStoreDevtools({
+      logOnly: environment.production,
+    }),
+    { provide: RouterStateSerializer, useClass: CustomRouterStateSerializer },
+  ],
+}).catch((err) => console.log(err));

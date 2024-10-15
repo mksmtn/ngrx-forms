@@ -3,6 +3,7 @@ import "prismjs/components/prism-json";
 import "prismjs/components/prism-typescript";
 
 import { ChangeDetectionStrategy, Component, Input } from "@angular/core";
+import { MatCardModule } from "@angular/material/card";
 import { FormGroupState } from "ngrx-forms";
 
 @Component({
@@ -10,6 +11,8 @@ import { FormGroupState } from "ngrx-forms";
   templateUrl: "./form-example.component.html",
   styleUrls: ["./form-example.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [MatCardModule],
 })
 export class FormExampleComponent {
   @Input() exampleName = "";

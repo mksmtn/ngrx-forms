@@ -1,4 +1,4 @@
-@if (formState$ | async; as formState) {
+@if (formState(); as formState) {
 
 <ngf-form-example
   exampleName="Array Form"
@@ -11,7 +11,7 @@
   <form>
     @for (control of formState.controls.options.controls; track $index) {
     <div>
-      <label>Option {{ i }}</label>
+      <label>Option {{ $index }}</label>
       <div>
         <input type="checkbox" [ngrxFormControlState]="control" />
       </div>

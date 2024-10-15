@@ -1,8 +1,16 @@
-import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
-import { select, Store } from "@ngrx/store";
-import { FormGroupState, resetAction, setValueAction } from "ngrx-forms";
-import { Observable } from "rxjs";
-import { map, take } from "rxjs/operators";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  Signal,
+} from "@angular/core";
+import { Store } from "@ngrx/store";
+import {
+  FormGroupState,
+  NgrxFormsModule,
+  resetAction,
+  setValueAction,
+} from "ngrx-forms";
 
 import {
   FormValue,
@@ -10,21 +18,25 @@ import {
   setSubmittedValueAction,
   State,
 } from "./simple-form.reducer";
+import { JsonPipe } from "@angular/common";
+import { SharedModule } from "../shared/shared.module";
 
 @Component({
   selector: "ngf-simple-form",
   templateUrl: "./simple-form.component.html",
   styleUrls: ["./simple-form.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [JsonPipe, SharedModule, NgrxFormsModule],
 })
 export class SimpleFormPageComponent {
   private readonly store = inject<Store<State>>(Store);
 
-  protected readonly formState$: Observable<FormGroupState<FormValue>> =
-    this.store.pipe(select((s) => s.simpleForm.formState));
+  protected readonly formState: Signal<FormGroupState<FormValue>> =
+    this.store.selectSignal((s) => s.simpleForm.formState);
 
-  protected readonly submittedValue$: Observable<FormValue | undefined> =
-    this.store.pipe(select((s) => s.simpleForm.submittedValue));
+  protected readonly submittedValue: Signal<FormValue | undefined> =
+    this.store.selectSignal((s) => s.simpleForm.submittedValue);
 
   protected reset(): void {
     this.store.dispatch(
@@ -37,11 +49,9 @@ export class SimpleFormPageComponent {
   }
 
   protected submit(): void {
-    this.formState$
-      .pipe(
-        take(1),
-        map((fs) => setSubmittedValueAction({ submittedValue: fs.value }))
-      )
-      .subscribe(this.store);
+    const action = setSubmittedValueAction({
+      submittedValue: this.formState().value,
+    });
+    this.store.dispatch(action);
   }
 }
