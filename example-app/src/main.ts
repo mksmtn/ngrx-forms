@@ -23,6 +23,7 @@ bootstrapApplication(AppComponent, {
     provideRouterStore(),
     provideStoreDevtools({
       logOnly: environment.production,
+      connectInZone: true,
     }),
     { provide: RouterStateSerializer, useClass: CustomRouterStateSerializer },
   ],
