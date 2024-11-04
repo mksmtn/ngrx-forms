@@ -1,3 +1,23 @@
 .hint {
   color: rgba(0, 0, 0, 0.54);
 }
+
+:host {
+  a.mat-mdc-list-item {
+    height: auto;
+    padding: 10px 16px;
+
+    &.active-link {
+      background: rgba(0, 0, 0, .08);
+    }
+  }
+
+  .mat-mdc-list-item.mdc-list-item--with-three-lines .mat-mdc-list-item-line.mdc-list-item__secondary-text {
+    white-space: normal;
+
+    &.hint {
+      padding-top: 5px;
+      font-size: 13px;
+    }
+  }
+}

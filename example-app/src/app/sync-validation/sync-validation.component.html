@@ -52,15 +52,19 @@
       <label>Date of Birth</label>
       <div>
         <select [ngrxFormControlState]="formState.controls.dayOfBirth">
-          <option *ngFor="let day of days" [value]="day">{{ day }}</option>
+          @for (day of days; track $index) {
+          <option [value]="day">{{ day }}</option>
+          }
         </select>
         <select [ngrxFormControlState]="formState.controls.monthOfBirth">
-          <option *ngFor="let month of months" [value]="month">
-            {{ month }}
-          </option>
+          @for (month of months; track $index) {
+          <option [value]="month">{{ month }}</option>
+          }
         </select>
         <select [ngrxFormControlState]="formState.controls.yearOfBirth">
-          <option *ngFor="let year of years" [value]="year">{{ year }}</option>
+          @for (year of years; track $index) {
+          <option [value]="year">{{ year }}</option>
+          }
         </select>
       </div>
     </div>
