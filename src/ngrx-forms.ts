@@ -96,3 +96,30 @@ export {
 } from "./status-css-classes.directive";
 
 export { NgrxFormsModule } from "./module";
+
+export { email, EmailValidationError } from "./validation/email";
+export { equalTo, EqualToValidationError } from "./validation/equal-to";
+export {
+  greaterThan,
+  GreaterThanValidationError,
+} from "./validation/greater-than";
+export {
+  greaterThanOrEqualTo,
+  GreaterThanOrEqualToValidationError,
+} from "./validation/greater-than-or-equal-to";
+export { lessThan, LessThanValidationError } from "./validation/less-than";
+export {
+  lessThanOrEqualTo,
+  LessThanOrEqualToValidationError,
+} from "./validation/less-than-or-equal-to";
+export { maxLength, MaxLengthValidationError } from "./validation/max-length";
+export { minLength, MinLengthValidationError } from "./validation/min-length";
+export {
+  notEqualTo,
+  NotEqualToValidationError,
+} from "./validation/not-equal-to";
+export { pattern, PatternValidationError } from "./validation/pattern";
+export { required, RequiredValidationError } from "./validation/required";
+export { number, NumberValidationError } from "./validation/number";
+export { requiredFalse } from "./validation/required-false";
+export { requiredTrue } from "./validation/required-true";

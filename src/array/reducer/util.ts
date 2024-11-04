@@ -9,6 +9,7 @@ import {
   FormState,
   isArrayState,
   isGroupState,
+  KeyValue,
 } from "../../state";
 
 export function dispatchActionPerChild<TValue>(
@@ -65,7 +66,7 @@ export function childReducer<TValue>(
   );
 }
 
-export function updateIdRecursiveForGroup<TValue>(
+export function updateIdRecursiveForGroup<TValue extends KeyValue>(
   state: FormGroupState<TValue>,
   newId: string
 ): FormGroupState<TValue> {
@@ -112,8 +113,8 @@ export function updateIdRecursive<TValue>(
     return state;
   }
 
-  if (isGroupState<TValue>(state)) {
-    return updateIdRecursiveForGroup<TValue>(state, newId) as FormState<TValue>;
+  if (isGroupState(state)) {
+    return updateIdRecursiveForGroup(state, newId) as FormState<TValue>;
   }
 
   if (isArrayState<TValue>(state)) {

@@ -5,7 +5,6 @@ import { reducer as arrayReducer } from "./array/array.reducer";
 import { reducer as valueConversionReducer } from "./value-conversion/value-conversion.reducer";
 import { reducer as syncValidationReducer } from "./sync-validation/sync-validation.reducer";
 import { reducer as simpleFormReducer } from "./simple-form/simple-form.reducer";
-import { reducer as simpleFormNgrx8Reducer } from "./simple-form-ngrx8/simple-form-ngrx8.reducer";
 import { reducer as recursiveUpdateReducer } from "./recursive-update/recursive-update.reducer";
 import { reducer as materialReducer } from "./material-example/material.reducer";
 import { reducer as dynamicReducer } from "./dynamic/dynamic.reducer";
@@ -29,14 +28,6 @@ export const routes: Routes = [
         (m) => m.SimpleFormPageComponent
       ),
     providers: [provideState("simpleForm", simpleFormReducer)],
-  },
-  {
-    path: "simpleFormNgrx8",
-    loadComponent: () =>
-      import("./simple-form-ngrx8/simple-form-ngrx8.component").then(
-        (m) => m.SimpleFormNgrx8PageComponent
-      ),
-    providers: [provideState("simpleFormNgrx8", simpleFormNgrx8Reducer)],
   },
   {
     path: "syncValidation",

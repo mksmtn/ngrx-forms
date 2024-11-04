@@ -5,9 +5,9 @@ import {
   FormGroupState,
   updateGroup,
   validate,
+  greaterThan,
+  required,
 } from "ngrx-forms";
-import { greaterThan, required } from "ngrx-forms/validation";
-
 import { State as RootState } from "../app.reducer";
 
 export interface FormValue {

@@ -8,8 +8,10 @@ import {
   updateGroup,
   validate,
   ValidationErrors,
+  minLength,
+  required,
+  requiredTrue,
 } from "ngrx-forms";
-import { minLength, required, requiredTrue } from "ngrx-forms/validation";
 
 import { State as RootState } from "../app.reducer";
 

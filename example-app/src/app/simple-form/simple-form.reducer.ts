@@ -1,9 +1,5 @@
-import { Action, combineReducers, createAction, props } from "@ngrx/store";
-import {
-  createFormGroupState,
-  formGroupReducer,
-  FormGroupState,
-} from "ngrx-forms";
+import { Action, createAction, createReducer, on, props } from "@ngrx/store";
+import { createFormGroupState, FormGroupState, onNgrxForms } from "ngrx-forms";
 
 import { State as RootState } from "../app.reducer";
 
@@ -43,23 +39,17 @@ export const INITIAL_STATE = createFormGroupState<FormValue>(FORM_ID, {
   notes: "",
 });
 
-const reducers = combineReducers<State["simpleForm"], any>({
-  formState(s = INITIAL_STATE, a: Action) {
-    return formGroupReducer(s, a);
+const reducers = createReducer<State["simpleForm"], any>(
+  {
+    formState: INITIAL_STATE,
+    submittedValue: undefined,
   },
-  submittedValue(
-    s: FormValue | undefined,
-    a: ReturnType<typeof setSubmittedValueAction>
-  ) {
-    switch (a.type) {
-      case setSubmittedValueAction.type:
-        return a.submittedValue;
-
-      default:
-        return s;
-    }
-  },
-});
+  onNgrxForms(),
+  on(setSubmittedValueAction, (state, { submittedValue }) => ({
+    ...state,
+    submittedValue,
+  }))
+);
 
 export function reducer(s: State["simpleForm"], a: Action) {
   return reducers(s, a);

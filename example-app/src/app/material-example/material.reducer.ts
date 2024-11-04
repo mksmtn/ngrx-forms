@@ -1,4 +1,4 @@
-import { Action, combineReducers } from '@ngrx/store';
+import { Action, combineReducers } from "@ngrx/store";
 import {
   box,
   Boxed,
@@ -9,10 +9,13 @@ import {
   FormGroupState,
   updateGroup,
   validate,
-} from 'ngrx-forms';
-import { equalTo, minLength, required, requiredTrue } from 'ngrx-forms/validation';
+  equalTo,
+  minLength,
+  required,
+  requiredTrue,
+} from "ngrx-forms";
 
-import { State as RootState } from '../app.reducer';
+import { State as RootState } from "../app.reducer";
 
 export interface PasswordValue {
   password: string;
@@ -38,44 +41,46 @@ export interface State extends RootState {
 }
 
 export class SetSubmittedValueAction implements Action {
-  static readonly TYPE = 'material/SET_SUBMITTED_VALUE';
+  static readonly TYPE = "material/SET_SUBMITTED_VALUE";
   readonly type = SetSubmittedValueAction.TYPE;
-  constructor(public submittedValue: FormValue) { }
+  constructor(public submittedValue: FormValue) {}
 }
 
-export const FORM_ID = 'material';
+export const FORM_ID = "material";
 
 export const INITIAL_STATE = createFormGroupState<FormValue>(FORM_ID, {
-  userName: '',
+  userName: "",
   createAccount: true,
   password: {
-    password: '',
-    confirmPassword: '',
+    password: "",
+    confirmPassword: "",
   },
-  sex: '',
-  favoriteColor: '',
+  sex: "",
+  favoriteColor: "",
   hobbies: box([]),
   dateOfBirth: new Date(Date.UTC(1970, 0, 1)).toISOString(),
   agreeToTermsOfUse: false,
 });
 
-const validationFormGroupReducer = createFormStateReducerWithUpdate<FormValue>(updateGroup<FormValue>({
-  userName: validate(required),
-  password: (state, parentState) => {
-    if (!parentState.value.createAccount) {
-      return disable(state);
-    }
+const validationFormGroupReducer = createFormStateReducerWithUpdate<FormValue>(
+  updateGroup<FormValue>({
+    userName: validate(required),
+    password: (state, parentState) => {
+      if (!parentState.value.createAccount) {
+        return disable(state);
+      }
 
-    state = enable(state);
-    return updateGroup<PasswordValue>(state, {
-      password: validate(required, minLength(8)),
-      confirmPassword: validate(equalTo(state.value.password)),
-    });
-  },
-  agreeToTermsOfUse: validate(requiredTrue),
-}));
+      state = enable(state);
+      return updateGroup<PasswordValue>(state, {
+        password: validate(required, minLength(8)),
+        confirmPassword: validate(equalTo(state.value.password)),
+      });
+    },
+    agreeToTermsOfUse: validate(requiredTrue),
+  })
+);
 
-const reducers = combineReducers<State['material'], any>({
+const reducers = combineReducers<State["material"], any>({
   formState(s = INITIAL_STATE, a: Action) {
     return validationFormGroupReducer(s, a);
   },
@@ -90,6 +95,6 @@ const reducers = combineReducers<State['material'], any>({
   },
 });
 
-export function reducer(s: State['material'], a: Action) {
+export function reducer(s: State["material"], a: Action) {
   return reducers(s, a);
 }
