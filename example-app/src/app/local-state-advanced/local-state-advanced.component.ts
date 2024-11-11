@@ -1,13 +1,14 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
-  OnDestroy,
+  DestroyRef,
+  inject,
   OnInit,
+  signal,
 } from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { Action, ActionsSubject, ActionType } from "@ngrx/store";
 import { Actions, NgrxFormsModule, setValueAction } from "ngrx-forms";
-import { Subscription } from "rxjs";
 
 import {
   getManufacturersAction,
@@ -24,38 +25,27 @@ import { SharedModule } from "../shared/shared.module";
   standalone: true,
   imports: [NgrxFormsModule, SharedModule],
 })
-export class LocalStateAdvancedComponent implements OnInit, OnDestroy {
-  protected localState = INITIAL_LOCAL_STATE;
+export class LocalStateAdvancedComponent implements OnInit {
+  protected readonly localState = signal(INITIAL_LOCAL_STATE);
 
-  private subscription = new Subscription();
-
-  constructor(
-    private readonly actionsSubject: ActionsSubject,
-    private readonly cd: ChangeDetectorRef
-  ) {}
+  private readonly actionsSubject = inject(ActionsSubject);
+  private readonly destroyRef = inject(DestroyRef);
 
   ngOnInit() {
-    this.subscription = this.actionsSubject.subscribe((action) => {
-      const updated = this.updateState(action);
-      if (updated) {
-        // since OnPush is used, need to trigger detectChanges
-        // when action from outside updates localState
-        this.cd.detectChanges();
-      }
-    });
+    this.actionsSubject
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((action) => {
+        this.updateState(action);
+      });
   }
 
-  ngOnDestroy(): void {
-    this.subscription.unsubscribe();
-  }
-
-  handleFormAction(action: ActionType<Actions>) {
+  protected handleFormAction(action: ActionType<Actions>) {
     this.updateState(action);
 
     // trigger loading of new manufacturers list in effect
     if (
       action.type === setValueAction.type &&
-      action.controlId === this.localState.formState.controls.countryCode.id
+      action.controlId === this.localState().formState.controls.countryCode.id
     ) {
       this.actionsSubject.next(
         // todo: can be better typed?
@@ -64,11 +54,10 @@ export class LocalStateAdvancedComponent implements OnInit, OnDestroy {
     }
   }
 
-  private updateState(action: Action): boolean {
-    const localState = reducer(this.localState, action);
-    const updated = localState !== this.localState;
-    this.localState = localState;
-
-    return updated;
+  private updateState(action: Action): void {
+    const localState = reducer(this.localState(), action);
+    if (localState !== this.localState()) {
+      this.localState.set(localState);
+    }
   }
 }

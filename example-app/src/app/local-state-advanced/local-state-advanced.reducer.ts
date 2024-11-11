@@ -44,6 +44,8 @@ const reducers = combineReducers<LocalState>({
     // update from loaded data
     if (a.type === setManufacturersAction.type) {
       return (a as ReturnType<typeof setManufacturersAction>).manufacturers;
+    } else if (a.type === getManufacturersAction.type) {
+      return [];
     }
     return manufacturers;
   },
