@@ -66,12 +66,4 @@ export class DynamicPageComponent {
     const action = removeArrayControlAction({ controlId: id, index });
     this.store.dispatch(action);
   }
-
-  protected trackByIndex(index: number): number {
-    return index;
-  }
-
-  protected trackById(_: number, id: string): string {
-    return id;
-  }
 }

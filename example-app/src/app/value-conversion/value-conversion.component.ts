@@ -4,18 +4,18 @@ import {
   inject,
   Signal,
 } from "@angular/core";
-import { select, Store } from "@ngrx/store";
+import { Store } from "@ngrx/store";
 import {
   FormGroupState,
   NgrxFormsModule,
   NgrxValueConverters,
 } from "ngrx-forms";
-import { Observable } from "rxjs";
 import { MatDatepickerModule } from "@angular/material/datepicker";
 
 import { FormValue, State } from "./value-conversion.reducer";
 import { SharedModule } from "../shared/shared.module";
 import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatInputModule } from "@angular/material/input";
 
 @Component({
   selector: "ngf-value-conversion",
@@ -28,6 +28,7 @@ import { MatFormFieldModule } from "@angular/material/form-field";
     SharedModule,
     MatDatepickerModule,
     MatFormFieldModule,
+    MatInputModule,
   ],
 })
 export class ValueConversionPageComponent {

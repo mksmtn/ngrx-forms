@@ -46,7 +46,7 @@
     </div>
     <div>
       <span class="section-heading">Group options:</span>
-      @for (o of groupOptions(); track trackById) {
+      @for (o of groupOptions(); track o) {
       <div class="group-option">
         <div>
           <label>Option {{ o }}</label>

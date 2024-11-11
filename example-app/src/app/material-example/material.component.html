@@ -88,9 +88,11 @@
     <div>
       Hobbies:
       <mat-selection-list [ngrxFormControlState]="formState.controls.hobbies">
-        <mat-list-option *ngFor="let op of hobbyOptions" [value]="op">
+        @for (op of hobbyOptions; track $index) {
+        <mat-list-option [value]="op">
           {{ op }}
         </mat-list-option>
+        }
       </mat-selection-list>
     </div>
     <div>

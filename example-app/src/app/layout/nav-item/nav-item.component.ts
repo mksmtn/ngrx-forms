@@ -17,9 +17,10 @@ import { RouterLink, RouterLinkActive } from "@angular/router";
   imports: [RouterLink, RouterLinkActive, MatLineModule, MatListModule],
 })
 export class NavItemComponent {
-  hint = input("");
+  readonly label = input.required<string>();
+  readonly hint = input("");
 
-  routerLink = input<string | string[]>("/");
+  readonly routerLink = input<string | string[]>("/");
 
-  protected lines = computed(() => (this.hint() ? 3 : 1));
+  protected readonly lines = computed(() => (this.hint() ? 3 : 1));
 }

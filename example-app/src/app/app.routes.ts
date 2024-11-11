@@ -4,6 +4,7 @@ import { provideEffects } from "@ngrx/effects";
 import { reducer as arrayReducer } from "./array/array.reducer";
 import { reducer as valueConversionReducer } from "./value-conversion/value-conversion.reducer";
 import { reducer as syncValidationReducer } from "./sync-validation/sync-validation.reducer";
+import { reducer as valueBoxingReducer } from "./value-boxing/value-boxing.reducer";
 import { reducer as simpleFormReducer } from "./simple-form/simple-form.reducer";
 import { reducer as recursiveUpdateReducer } from "./recursive-update/recursive-update.reducer";
 import { reducer as materialReducer } from "./material-example/material.reducer";
@@ -62,10 +63,11 @@ export const routes: Routes = [
   },
   {
     path: "valueBoxing",
-    loadChildren: () =>
-      import("./value-boxing/value-boxing.module").then(
-        (m) => m.ValueBoxingModule
+    loadComponent: () =>
+      import("./value-boxing/value-boxing.component").then(
+        (m) => m.ValueBoxingPageComponent
       ),
+    providers: [provideState("valueBoxing", valueBoxingReducer)],
   },
   {
     path: "valueConversion",

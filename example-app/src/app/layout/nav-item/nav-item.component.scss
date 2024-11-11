@@ -8,11 +8,12 @@
     padding: 10px 16px;
 
     &.active-link {
-      background: rgba(0, 0, 0, .08);
+      background: rgba(0, 0, 0, 0.08);
     }
   }
 
-  .mat-mdc-list-item.mdc-list-item--with-three-lines .mat-mdc-list-item-line.mdc-list-item__secondary-text {
+  .mat-mdc-list-item.mdc-list-item--with-three-lines
+    .mat-mdc-list-item-line.mdc-list-item__secondary-text {
     white-space: normal;
 
     &.hint {

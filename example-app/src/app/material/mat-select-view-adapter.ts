@@ -13,6 +13,7 @@ import { Subscription } from "rxjs";
 // tslint:disable:directive-class-suffix
 // necessary since material 2 does not properly export the mat-select as a NG_VALUE_ACCESSOR
 @Directive({
+  standalone: true,
   selector: "mat-select[ngrxFormControlState]",
   providers: [
     {

@@ -1,20 +1,29 @@
-import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
-import { select, Store } from "@ngrx/store";
-import { FormGroupState, unbox } from "ngrx-forms";
-import { Observable } from "rxjs";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  Signal,
+} from "@angular/core";
+import { JsonPipe } from "@angular/common";
+import { Store } from "@ngrx/store";
+import { FormGroupState, NgrxFormsModule, unbox } from "ngrx-forms";
 
 import { FormValue, State } from "./value-boxing.reducer";
+import { SharedModule } from "../shared/shared.module";
 
 @Component({
   selector: "ngf-value-boxing",
   templateUrl: "./value-boxing.component.html",
   styleUrls: ["./value-boxing.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [NgrxFormsModule, SharedModule, JsonPipe],
 })
 export class ValueBoxingPageComponent {
-  protected readonly formState$: Observable<FormGroupState<FormValue>> = inject<
+  protected readonly formState: Signal<FormGroupState<FormValue>> = inject<
     Store<State>
-  >(Store).pipe(select((s) => s.valueBoxing.formState));
+  >(Store).selectSignal((s) => s.valueBoxing.formState);
 
   protected readonly unbox = unbox;
+  protected readonly options = [1, 2, 3, 4, 5];
 }

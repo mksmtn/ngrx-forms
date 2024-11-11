@@ -4,12 +4,8 @@
   [routerLink]="routerLink()"
   routerLinkActive="active-link"
 >
-  <span matListItemTitle>
-    <ng-content></ng-content>
-  </span>
+  <span matListItemTitle>{{ label() }}</span>
   @if (hint(); as hint) {
-  <span matListItemLine>
-    {{ hint }}
-  </span>
+  <span matListItemLine>{{ hint }}</span>
   }
 </a>

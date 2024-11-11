@@ -1,5 +1,4 @@
 @if (formState(); as formState) {
-
 <ngf-form-example
   exampleName="Array Form"
   githubLinkOverride="array"
@@ -10,11 +9,11 @@
   <br />
   <form>
     @for (control of formState.controls.options.controls; track $index) {
-    <div>
-      <label>Option {{ $index }}</label>
-      <div>
+    <div class="option">
+      <label>
+        Option {{ $index }}
         <input type="checkbox" [ngrxFormControlState]="control" />
-      </div>
+      </label>
     </div>
     }
   </form>

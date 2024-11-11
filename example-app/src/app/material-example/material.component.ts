@@ -23,10 +23,15 @@ import {
 import { JsonPipe } from "@angular/common";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatDatepickerModule } from "@angular/material/datepicker";
+import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatListModule } from "@angular/material/list";
 import { MatOptionModule } from "@angular/material/core";
 import { MatRadioModule } from "@angular/material/radio";
 import { SharedModule } from "../shared/shared.module";
+import { materialFixes } from "../material/material-fixes";
+import { MatInputModule } from "@angular/material/input";
+import { MatSelectModule } from "@angular/material/select";
+import { MatButtonModule } from "@angular/material/button";
 
 @Component({
   selector: "ngf-material",
@@ -39,10 +44,16 @@ import { SharedModule } from "../shared/shared.module";
     JsonPipe,
     SharedModule,
     MatFormFieldModule,
-    MatDatepickerModule,
+    MatInputModule,
+    MatSelectModule,
+    MatRadioModule,
     MatListModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatDatepickerModule,
     MatOptionModule,
     MatRadioModule,
+    ...materialFixes,
   ],
 })
 export class DynamicPageComponent {

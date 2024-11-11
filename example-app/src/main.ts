@@ -11,6 +11,7 @@ import { provideRouter } from "@angular/router";
 import { routes } from "./app/app.routes";
 import { provideStoreDevtools } from "@ngrx/store-devtools";
 import { provideStore } from "@ngrx/store";
+import { provideNativeDateAdapter } from "@angular/material/core";
 
 if (environment.production) {
   enableProdMode();
@@ -28,5 +29,6 @@ bootstrapApplication(AppComponent, {
       connectInZone: true,
     }),
     { provide: RouterStateSerializer, useClass: CustomRouterStateSerializer },
+    provideNativeDateAdapter(),
   ],
 }).catch((err) => console.log(err));
