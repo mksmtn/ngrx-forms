@@ -1,10 +1,9 @@
-import { Action, combineReducers, createAction } from "@ngrx/store";
+import { Action, createAction, createReducer, on } from "@ngrx/store";
 import {
   createFormGroupState,
   disable,
-  enable,
-  formGroupReducer,
   FormGroupState,
+  onNgrxForms,
   setUserDefinedProperty,
   updateGroup,
   updateRecursive,
@@ -51,37 +50,16 @@ export const INITIAL_STATE = updateGroup<FormValue>(
   }
 );
 
-export function formStateReducer(
-  state = INITIAL_STATE,
-  a: ReturnType<typeof blockUIAction> | ReturnType<typeof unblockUIAction>
-) {
-  state = formGroupReducer(state, a);
-
-  // todo: rewrite
-  switch (a.type) {
-    case blockUIAction.type: {
-      state = updateRecursive(state, (s) =>
-        setUserDefinedProperty(s, "wasDisabled", s.isDisabled)
-      );
-      return disable(state);
-    }
-
-    case unblockUIAction.type: {
-      state = enable(state);
-      return updateRecursive(state, (s) =>
-        s.userDefinedProperties.wasDisabled ? disable(s) : s
-      );
-    }
-
-    default: {
-      return state;
-    }
-  }
-}
-
-const reducers = combineReducers<State["recursiveUpdate"], any>({
-  formState: formStateReducer,
-});
+const reducers = createReducer<State["recursiveUpdate"]>(
+  { formState: INITIAL_STATE },
+  onNgrxForms(),
+  on(blockUIAction, (state) => {
+    const updatedFormState = updateRecursive(state.formState, (s) =>
+      setUserDefinedProperty(s, "wasDisabled", s.isDisabled)
+    );
+    return { ...state, formState: disable(updatedFormState) };
+  })
+);
 
 export function reducer(s: State["recursiveUpdate"], a: Action) {
   return reducers(s, a);

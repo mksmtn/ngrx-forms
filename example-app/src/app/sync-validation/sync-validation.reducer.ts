@@ -1,4 +1,11 @@
-import { Action, combineReducers, createAction, props } from "@ngrx/store";
+import {
+  Action,
+  combineReducers,
+  createAction,
+  createReducer,
+  on,
+  props,
+} from "@ngrx/store";
 import {
   createFormGroupState,
   disable,
@@ -91,22 +98,13 @@ export const validateAndUpdateForm = updateGroup<FormValue>({
 });
 
 const reducers = combineReducers<State["syncValidation"], any>({
-  formState(s = INITIAL_STATE, a: Action) {
-    return validateAndUpdateForm(formGroupReducer(s, a));
-  },
-  submittedValue(
-    s: FormValue | undefined,
-    a: ReturnType<typeof setSubmittedValueAction>
-  ) {
-    // todo: rewrite
-    switch (a.type) {
-      case setSubmittedValueAction.type:
-        return a.submittedValue;
+  formState: (s = INITIAL_STATE, a: Action) =>
+    validateAndUpdateForm(formGroupReducer(s, a)),
 
-      default:
-        return s;
-    }
-  },
+  submittedValue: createReducer<State["syncValidation"]["submittedValue"]>(
+    undefined,
+    on(setSubmittedValueAction, (_, action) => action.submittedValue)
+  ),
 });
 
 export function reducer(s: State["syncValidation"], a: Action) {
