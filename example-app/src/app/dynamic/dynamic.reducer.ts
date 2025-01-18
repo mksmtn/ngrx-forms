@@ -1,10 +1,17 @@
-import { Action, combineReducers, createAction, props } from "@ngrx/store";
+import {
+  Action,
+  combineReducers,
+  createAction,
+  createReducer,
+  on,
+  props,
+} from "@ngrx/store";
 import {
   addArrayControlAction,
   addGroupControl,
   createFormGroupState,
-  formGroupReducer,
   FormGroupState,
+  onNgrxForms,
   removeArrayControlAction,
   setValue,
   updateGroup,
@@ -48,100 +55,85 @@ export const INITIAL_STATE = createFormGroupState<FormValue>(FORM_ID, {
   },
 });
 
-export function formStateReducer(
-  s = INITIAL_STATE,
-  a:
-    | ReturnType<typeof createGroupElementAction>
-    | ReturnType<typeof removeGroupElementAction>
-) {
-  s = formGroupReducer(s, a);
+export const formStateReducer = createReducer<
+  typeof INITIAL_STATE,
+  | ReturnType<typeof createGroupElementAction>
+  | ReturnType<typeof removeGroupElementAction>
+>(
+  INITIAL_STATE,
+  onNgrxForms(),
+  on(createGroupElementAction, (state, action) => {
+    return updateGroup<FormValue>({
+      group: (group) => {
+        const newGroup = addGroupControl(group, action.name, false);
 
-  switch (a.type) {
-    // todo: rewrite
-    case createGroupElementAction.type:
-      return updateGroup<FormValue>({
-        group: (group) => {
-          const newGroup = addGroupControl(group, a.name, false);
+        // alternatively we can also use setValue
+        // const newValue = { ...group.value, [a.name]: false };
+        // const newGroup = setValue(group, newValue);
 
-          // alternatively we can also use setValue
-          // const newValue = { ...group.value, [a.name]: false };
-          // const newGroup = setValue(group, newValue);
+        return newGroup;
+      },
+    })(state);
+  }),
+  on(removeGroupElementAction, (state, action) => {
+    return updateGroup<FormValue>({
+      group: (group) => {
+        const newValue = { ...group.value };
+        delete newValue[action.name];
+        const newGroup = setValue(group, newValue);
 
-          return newGroup;
-        },
-      })(s);
+        // alternatively we can also use removeGroupControl
+        // const newGroup = removeGroupControl(group, a.name);
 
-    case removeGroupElementAction.type:
-      return updateGroup<FormValue>({
-        group: (group) => {
-          const newValue = { ...group.value };
-          delete newValue[a.name];
-          const newGroup = setValue(group, newValue);
+        return newGroup;
+      },
+    })(state);
+  })
+);
 
-          // alternatively we can also use removeGroupControl
-          // const newGroup = removeGroupControl(group, a.name);
+const arrayReducer = createReducer<
+  State["dynamic"]["array"],
+  | ReturnType<typeof addArrayControlAction>
+  | ReturnType<typeof removeArrayControlAction>
+>(
+  { maxIndex: 2, options: [1, 2] },
+  on(addArrayControlAction, (state, action) => {
+    const maxIndex = state.maxIndex + 1;
+    const options = [...state.options];
+    options.splice(action.index ?? 0, 0, maxIndex);
+    return {
+      maxIndex,
+      options,
+    };
+  }),
+  on(removeArrayControlAction, (state, action) => {
+    const options = [...state.options];
+    options.splice(action.index, 1);
+    return {
+      ...state,
+      options,
+    };
+  })
+);
 
-          return newGroup;
-        },
-      })(s);
-
-    default:
-      return s;
-  }
-}
+const groupOptionsReducer = createReducer<
+  State["dynamic"]["groupOptions"],
+  | ReturnType<typeof createGroupElementAction>
+  | ReturnType<typeof removeGroupElementAction>
+>(
+  ["abc", "xyz"],
+  on(createGroupElementAction, (state, action) => {
+    return [...state, action.name];
+  }),
+  on(removeGroupElementAction, (state, action) => {
+    return state.filter((a) => a !== action.name);
+  })
+);
 
 const reducers = combineReducers<State["dynamic"], any>({
   formState: formStateReducer,
-  // todo: rewrite
-  array(
-    s = { maxIndex: 2, options: [1, 2] },
-    a:
-      | ReturnType<typeof addArrayControlAction>
-      | ReturnType<typeof removeArrayControlAction>
-  ) {
-    switch (a.type) {
-      case addArrayControlAction.type: {
-        const maxIndex = s.maxIndex + 1;
-        const options = [...s.options];
-        // tslint:disable-next-line:no-unnecessary-type-assertion
-        options.splice(a.index!, 0, maxIndex);
-        return {
-          maxIndex,
-          options,
-        };
-      }
-
-      case removeArrayControlAction.type: {
-        const options = [...s.options];
-        // tslint:disable-next-line:no-unnecessary-type-assertion
-        options.splice(a.index!, 1);
-        return {
-          ...s,
-          options,
-        };
-      }
-
-      default:
-        return s;
-    }
-  },
-  groupOptions(
-    s: string[] = ["abc", "xyz"],
-    a:
-      | ReturnType<typeof createGroupElementAction>
-      | ReturnType<typeof removeGroupElementAction>
-  ) {
-    switch (a.type) {
-      case createGroupElementAction.type:
-        return [...s, a.name];
-
-      case removeGroupElementAction.type:
-        return s.filter((i) => i !== a.name);
-
-      default:
-        return s;
-    }
-  },
+  array: arrayReducer,
+  groupOptions: groupOptionsReducer,
 });
 
 export function reducer(s: State["dynamic"], a: Action) {

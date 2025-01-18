@@ -1,4 +1,11 @@
-import { Action, combineReducers } from "@ngrx/store";
+import {
+  Action,
+  combineReducers,
+  createAction,
+  createReducer,
+  on,
+  props,
+} from "@ngrx/store";
 import {
   box,
   Boxed,
@@ -40,15 +47,16 @@ export interface State extends RootState {
   };
 }
 
-export class SetSubmittedValueAction implements Action {
-  static readonly TYPE = "material/SET_SUBMITTED_VALUE";
-  readonly type = SetSubmittedValueAction.TYPE;
-  constructor(public submittedValue: FormValue) {}
-}
+export const setSubmittedValueAction = createAction(
+  "material/SET_SUBMITTED_VALUE",
+  props<{
+    submittedValue: FormValue;
+  }>()
+);
 
 export const FORM_ID = "material";
 
-export const INITIAL_STATE = createFormGroupState<FormValue>(FORM_ID, {
+export const INITIAL_FORM_STATE = createFormGroupState<FormValue>(FORM_ID, {
   userName: "",
   createAccount: true,
   password: {
@@ -61,6 +69,11 @@ export const INITIAL_STATE = createFormGroupState<FormValue>(FORM_ID, {
   dateOfBirth: new Date(Date.UTC(1970, 0, 1)).toISOString(),
   agreeToTermsOfUse: false,
 });
+
+export const INITIAL_STATE: State["material"] = {
+  formState: INITIAL_FORM_STATE,
+  submittedValue: undefined,
+};
 
 const validationFormGroupReducer = createFormStateReducerWithUpdate<FormValue>(
   updateGroup<FormValue>({
@@ -81,18 +94,15 @@ const validationFormGroupReducer = createFormStateReducerWithUpdate<FormValue>(
 );
 
 const reducers = combineReducers<State["material"], any>({
-  formState(s = INITIAL_STATE, a: Action) {
+  formState(s = INITIAL_STATE.formState, a: Action) {
     return validationFormGroupReducer(s, a);
   },
-  submittedValue(s: FormValue | undefined, a: SetSubmittedValueAction) {
-    switch (a.type) {
-      case SetSubmittedValueAction.TYPE:
-        return a.submittedValue;
-
-      default:
-        return s;
-    }
-  },
+  submittedValue: createReducer(
+    INITIAL_STATE.submittedValue,
+    on(setSubmittedValueAction, (_state, action) => {
+      return action.submittedValue;
+    })
+  ),
 });
 
 export function reducer(s: State["material"], a: Action) {

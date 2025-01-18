@@ -16,8 +16,8 @@ import {
 
 import {
   FormValue,
-  INITIAL_STATE,
-  SetSubmittedValueAction,
+  INITIAL_FORM_STATE,
+  setSubmittedValueAction,
   State,
 } from "./material.reducer";
 import { JsonPipe } from "@angular/common";
@@ -90,16 +90,18 @@ export class DynamicPageComponent {
   protected reset(): void {
     this.store.dispatch(
       setValueAction({
-        controlId: INITIAL_STATE.id,
-        value: INITIAL_STATE.value,
+        controlId: INITIAL_FORM_STATE.id,
+        value: INITIAL_FORM_STATE.value,
       })
     );
-    this.store.dispatch(resetAction({ controlId: INITIAL_STATE.id }));
+    this.store.dispatch(resetAction({ controlId: INITIAL_FORM_STATE.id }));
   }
 
   protected submit(): void {
     if (this.formState().isValid) {
-      const action = new SetSubmittedValueAction(this.formState().value);
+      const action = setSubmittedValueAction({
+        submittedValue: this.formState().value,
+      });
       this.store.dispatch(action);
     }
   }
