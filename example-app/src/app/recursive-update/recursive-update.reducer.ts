@@ -2,6 +2,7 @@ import { Action, createAction, createReducer, on } from "@ngrx/store";
 import {
   createFormGroupState,
   disable,
+  enable,
   FormGroupState,
   onNgrxForms,
   setUserDefinedProperty,
@@ -58,6 +59,15 @@ const reducers = createReducer<State["recursiveUpdate"]>(
       setUserDefinedProperty(s, "wasDisabled", s.isDisabled)
     );
     return { ...state, formState: disable(updatedFormState) };
+  }),
+  on(unblockUIAction, (state) => {
+    const enabledFormState = enable(state.formState);
+    return {
+      ...state,
+      formState: updateRecursive(enabledFormState, (s) =>
+        s.userDefinedProperties.wasDisabled ? disable(s) : s
+      ),
+    };
   })
 );
 
